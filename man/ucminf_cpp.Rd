@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{ucminf_cpp}
 \alias{ucminf_cpp}
-\title{Unconstrained Nonlinear Optimization (C/Rcpp implementation)}
+\title{Unconstrained Nonlinear Optimization (C++/Rcpp implementation)}
 \usage{
 ucminf_cpp(par, fn, gr, has_gr, control)
 }

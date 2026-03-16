@@ -17,7 +17,7 @@
  *   - Algorithmic logic is preserved verbatim from the C translation
  */
 
-#include "ucminf_core.hpp"
+#include "include/ucminf_core.hpp"
 
 #include <algorithm>
 #include <cmath>

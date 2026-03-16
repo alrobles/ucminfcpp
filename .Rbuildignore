@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^CMakeLists.txt$
+^cmake$
+^julia$
+^python$
+^tests/cpp$
+^src/ucminf_core.hpp$

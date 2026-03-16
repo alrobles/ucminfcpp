@@ -11,7 +11,7 @@
 
 // [[Rcpp::depends(Rcpp)]]
 #include <Rcpp.h>
-#include "ucminf_core.hpp"
+#include "include/ucminf_core.hpp"
 
 using namespace Rcpp;
 

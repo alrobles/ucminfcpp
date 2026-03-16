@@ -1,8 +1,9 @@
 # ucminfcpp
 
-Unconstrained nonlinear optimization via C and Rcpp — a modern
-reimplementation of the original Fortran-based
-[ucminf](https://CRAN.R-project.org/package=ucminf) R package.
+Unconstrained nonlinear optimization via **modern C++17** and Rcpp — a
+complete reimplementation of the original Fortran-based
+[ucminf](https://CRAN.R-project.org/package=ucminf) R package with
+multi-language support.
 
 ## Overview
 
@@ -18,7 +19,20 @@ DTU, 2000) and described in:
 > H.B. Nielsen, "UCMINF — An Algorithm for Unconstrained, Nonlinear
 > Optimization", Report IMM-REP-2000-19, DTU, December 2000.
 
+### Key features
+
+| Feature | Description |
+|---------|-------------|
+| **Modern C++17 core** | No raw pointers, no manual memory management. `std::vector`, `std::function`, RAII throughout. |
+| **R interface** | Drop-in replacement for `ucminf::ucminf()` via Rcpp. |
+| **Python bindings** | `pybind11`-based module in `python/`. |
+| **Julia bindings** | `CxxWrap`-based module in `julia/`. |
+| **C++ unit tests** | Catch2 test suite covering the pure C++ API. |
+| **CMake build** | Standalone C++ build for embedding in other projects. |
+
 ## Installation
+
+### R package
 
 Install from GitHub with `remotes`:
 
@@ -27,17 +41,30 @@ Install from GitHub with `remotes`:
 remotes::install_github("alrobles/ucminfcpp")
 ```
 
+### Python module
+
+```bash
+pip install pybind11
+pip install python/    # from the repository root
+```
+
+### Standalone C++ / tests
+
+```bash
+cmake -S . -B build -DBUILD_TESTS=ON
+cmake --build build
+ctest --test-dir build
+```
+
 ## Usage
 
-### Basic example — Rosenbrock function
+### R
 
 ```r
 library(ucminfcpp)
 
-# Objective function
+# Rosenbrock Banana function
 fn <- function(x) (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2
-
-# Analytic gradient (optional)
 gr <- function(x) c(
   -400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),
    200 * (x[2] - x[1]^2)
@@ -50,30 +77,107 @@ result$value        # minimum: ~0
 result$convergence  # 1 = converged (small gradient)
 ```
 
-### Using finite-difference gradients
+### Python
 
-If no gradient function is supplied, the gradient is approximated
-automatically via finite differences:
+```python
+import ucminf
 
-```r
-# Forward differences (default)
-result <- ucminf(par = c(2, 0.5), fn = fn)
+fn = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
+gr = lambda x: [-400*x[0]*(x[1]-x[0]**2)-2*(1-x[0]),
+                 200*(x[1]-x[0]**2)]
 
-# Central differences (more accurate, roughly twice as many evaluations)
-result <- ucminf(par = c(2, 0.5), fn = fn,
-                 control = list(grad = "central"))
+result = ucminf.minimize(x0=[2.0, 0.5], fn=fn, gr=gr)
+print(result.x)      # [1.0, 1.0]
+print(result.f)      # ~0.0
+print(result.status) # Status.SmallGradient
 ```
 
-### Retrieving the Hessian
+See [python/README.md](python/README.md) for the full Python API.
 
-```r
-result <- ucminf(par = c(2, 0.5), fn = fn, gr = gr, hessian = 3)
+### Pure C++
 
-result$invhessian   # approximate inverse Hessian at solution
-result$hessian      # approximate Hessian at solution
+```cpp
+#include "ucminf_core.hpp"
+
+auto rosenbrock = [](const std::vector<double>& x,
+                     std::vector<double>& g, double& f) {
+    f    = (1-x[0])*(1-x[0]) + 100*(x[1]-x[0]*x[0])*(x[1]-x[0]*x[0]);
+    g[0] = -2*(1-x[0]) - 400*x[0]*(x[1]-x[0]*x[0]);
+    g[1] =  200*(x[1]-x[0]*x[0]);
+};
+
+ucminf::Control ctrl;
+ctrl.grtol = 1e-8;
+
+ucminf::Result result = ucminf::minimize({2.0, 0.5}, rosenbrock, ctrl);
+// result.x            → {1.0, 1.0}
+// result.f            → ~0
+// result.status       → ucminf::Status::SmallGradient
+// result.n_eval       → number of f+g evaluations
+// result.inv_hessian_lt → packed lower triangle of final inv-Hessian
 ```
 
-## Function signature
+### Julia
+
+See [julia/README.md](julia/README.md) for build instructions and usage.
+
+## C++ API reference
+
+### `ucminf::minimize()`
+
+```cpp
+ucminf::Result minimize(
+    std::vector<double> x0,
+    ucminf::ObjFun      fdf,
+    const ucminf::Control& control = {}
+);
+```
+
+Minimizes `f(x)` starting from `x0`. Throws `std::invalid_argument` if
+control parameters are invalid.
+
+### `ucminf::ObjFun`
+
+```cpp
+using ObjFun = std::function<void(
+    const std::vector<double>& x,   // current point (input)
+    std::vector<double>&       g,   // gradient (output)
+    double&                    f    // function value (output)
+)>;
+```
+
+### `ucminf::Control`
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `grtol` | `1e-6` | Stop when max\|grad\| ≤ grtol |
+| `xtol` | `1e-12` | Stop when step ≤ xtol |
+| `stepmax` | `1.0` | Initial trust-region radius |
+| `maxeval` | `500` | Maximum function+gradient evaluations |
+| `inv_hessian_lt` | `{}` | Optional initial inverse Hessian (packed lower triangle) |
+
+### `ucminf::Result`
+
+| Field | Description |
+|-------|-------------|
+| `x` | Parameter values at the minimum |
+| `f` | Objective value at x |
+| `n_eval` | Total evaluations used |
+| `max_gradient` | max\|grad(x)\| at solution |
+| `last_step` | Length of the last accepted step |
+| `status` | `ucminf::Status` convergence code |
+| `inv_hessian_lt` | Final inverse Hessian (packed lower triangle) |
+
+### `ucminf::Status`
+
+| Value | Code | Meaning |
+|-------|------|---------|
+| `SmallGradient` | 1 | Converged: max\|grad\| ≤ grtol |
+| `SmallStep` | 2 | Converged: step ≤ xtol |
+| `EvaluationLimitReached` | 3 | Stopped: maxeval reached |
+| `ZeroStepFromLineSearch` | 4 | Stopped: line search returned alpha=0 |
+
+## R interface (`ucminf()`)
 
 ```r
 ucminf(par, fn, gr = NULL, ..., control = list(), hessian = 0)
@@ -83,38 +187,38 @@ ucminf(par, fn, gr = NULL, ..., control = list(), hessian = 0)
 |-----------|-------------|
 | `par`     | Numeric vector of initial parameter values. |
 | `fn`      | Objective function to minimize (must return a scalar). |
-| `gr`      | Optional gradient function (must return a vector the same length as `par`). If `NULL`, finite differences are used. |
+| `gr`      | Optional gradient function. If `NULL`, finite differences are used. |
 | `...`     | Additional arguments passed to `fn` and `gr`. |
 | `control` | Named list of algorithmic parameters (see below). |
-| `hessian` | `0` = no Hessian output, `2` = return inverse Hessian, `3` = return both inverse Hessian and Hessian. |
+| `hessian` | `0` = no Hessian output, `2` = inverse Hessian, `3` = both. |
 
-### Control parameters
+### R control parameters
 
-| Name              | Default   | Description |
-|-------------------|-----------|-------------|
-| `trace`           | `0`       | Print level. `0` = silent, positive values increase verbosity. |
-| `grtol`           | `1e-6`    | Convergence tolerance on the infinity norm of the gradient. |
-| `xtol`            | `1e-12`   | Convergence tolerance on step size. |
-| `stepmax`         | `1`       | Initial trust-region radius. |
-| `maxeval`         | `500`     | Maximum number of function evaluations. |
-| `grad`            | `"forward"` | Finite-difference type when `gr = NULL`: `"forward"` or `"central"`. |
-| `gradstep`        | `c(1e-6, 1e-8)` | Step size parameters for finite differences. The step for element `i` is `abs(x[i]) * gradstep[1] + gradstep[2]`. |
-| `invhessian.lt`   | (identity) | Initial inverse Hessian as a packed lower-triangle vector. |
+| Name | Default | Description |
+|------|---------|-------------|
+| `trace` | `0` | Print level. |
+| `grtol` | `1e-6` | Gradient tolerance. |
+| `xtol` | `1e-12` | Step tolerance. |
+| `stepmax` | `1` | Initial trust-region radius. |
+| `maxeval` | `500` | Maximum function evaluations. |
+| `grad` | `"forward"` | Finite-difference type: `"forward"` or `"central"`. |
+| `gradstep` | `c(1e-6, 1e-8)` | Step size for finite differences. |
+| `invhessian.lt` | (identity) | Initial inverse Hessian (packed lower-triangle vector). |
 
-### Return value
+### R return value
 
-A list of class `"ucminf"` with components:
+A list of class `"ucminf"` with:
 
-| Name              | Description |
-|-------------------|-------------|
-| `par`             | Parameter values at the minimum. |
-| `value`           | Objective function value at the minimum. |
-| `convergence`     | Integer code: `1` = small gradient, `2` = small step, `3` = evaluation limit, `4` = zero step, negative = error. |
-| `message`         | Human-readable convergence message. |
-| `info`            | Named vector with `maxgradient`, `laststep`, `stepmax`, and `neval`. |
-| `invhessian.lt`   | Lower triangle of the final inverse Hessian (packed). |
-| `invhessian`      | Full inverse Hessian matrix (when `hessian >= 2`). |
-| `hessian`         | Full Hessian matrix (when `hessian == 3`). |
+| Name | Description |
+|------|-------------|
+| `par` | Parameter values at the minimum. |
+| `value` | Objective function value at the minimum. |
+| `convergence` | Integer code (1=small gradient, 2=small step, 3=eval limit, 4=zero step). |
+| `message` | Human-readable convergence message. |
+| `info` | Named vector: `maxgradient`, `laststep`, `stepmax`, `neval`. |
+| `invhessian.lt` | Lower triangle of the final inverse Hessian. |
+| `invhessian` | Full inverse Hessian matrix (when `hessian >= 2`). |
+| `hessian` | Full Hessian matrix (when `hessian == 3`). |
 
 ## Algorithm details
 
@@ -137,58 +241,23 @@ The UCMINF algorithm combines three techniques:
 The inverse Hessian is stored in packed lower-triangular form, so memory
 usage scales as `n(n+1)/2` rather than `n²`.
 
-## Migration from Fortran
+## Migration history
 
-The original `ucminf` R package relied on a Fortran subroutine for the core
-optimization loop, called from R through C glue code. **ucminfcpp**
-eliminates the Fortran dependency entirely through a two-phase migration:
+| Phase | Source | Target | Description |
+|-------|--------|--------|-------------|
+| 1 | Fortran 77 | C99 (`ucminf_core.c`) | Line-by-line translation; Fortran BLAS replaced with inline helpers |
+| 2 | C99 | Rcpp (`ucminf_rcpp.cpp`) | C callback wrapped for R; Rcpp manages R↔C bridge |
+| 3 (this PR) | C99 + Rcpp | C++17 + Rcpp + pybind11 + CxxWrap | Full modernization; raw pointers → `std::vector`; C function pointer → `std::function`; multi-language support |
 
-### Phase 1 — Fortran to C (`src/ucminf_core.c`)
+### Why migrate to C++17?
 
-The Fortran subroutine was translated line-by-line into portable C99. The
-translation preserves the algorithmic structure of the original code so that
-the two implementations can be compared side by side. Key changes from the
-Fortran source:
-
-| Aspect | Fortran original | C translation |
-|--------|-----------------|---------------|
-| Array indexing | 1-based | 0-based |
-| BLAS routines | External library (DDOT, DNRM2, DCOPY, DSCAL, DAXPY, IDAMAX, DSPMV, DSPR2, DSPR) | Inline helper functions (`my_ddot`, `my_dnrm2`, etc.) |
-| Function/gradient evaluation | `EXTERNAL FDF` subroutine | C callback via `ucminf_fdf_t` function pointer with `void *userdata` |
-| Matrix storage | Packed lower triangle (column-major) | Same layout, unchanged |
-| Workspace | Passed as a single `DOUBLE PRECISION W(IW)` array | Same layout, unchanged |
-
-The resulting `ucminf_optimize()` C function is a self-contained, pure-C
-implementation with no external dependencies beyond the C standard library.
-
-### Phase 2 — C to R via Rcpp (`src/ucminf_rcpp.cpp`)
-
-An Rcpp wrapper bridges the C core to R:
-
-- A **callback trampoline** (`r_fdf_callback`) converts between the C
-  function-pointer interface and R function calls. It handles evaluation of
-  the objective function and either calls the user-supplied gradient or
-  computes a finite-difference approximation (forward or central).
-- The exported `ucminf_cpp()` function translates R control parameters into
-  the C interface, allocates workspace, invokes `ucminf_optimize()`, and
-  packs the results back into an R list.
-
-### Phase 3 — R interface (`R/ucminf.R`)
-
-The user-facing `ucminf()` function in R provides the same API as the
-original `ucminf` package. It validates inputs, builds the control list,
-calls the Rcpp layer, and reconstructs the full inverse-Hessian matrix from
-the packed storage returned by the C core.
-
-### Why migrate?
-
-| Concern | Fortran + C + R | Pure C + Rcpp |
-|---------|----------------|---------------|
-| Compiler toolchain | Requires a Fortran compiler (gfortran) | C and C++ compilers only |
-| CRAN portability | Fortran compiler availability varies across platforms | Broader platform support |
-| Maintainability | Three-language stack | Two-language stack (C + C++/R) |
-| External BLAS | Depends on system BLAS | Self-contained BLAS-like helpers |
-| Build complexity | Makevars must link Fortran runtime | Standard Rcpp build |
+| Concern | C99 + Rcpp | C++17 + Rcpp |
+|---------|-----------|--------------|
+| Memory management | Manual (`malloc`/`free` pattern via workspace arrays) | RAII (`std::vector` lifetime) |
+| Callback interface | C function pointer + `void *userdata` | `std::function<…>` — type-safe, captures lambdas |
+| Error handling | Return integer codes | `std::invalid_argument` exceptions |
+| Multi-language API | R only | R, Python, Julia, standalone C++ |
+| Unit testing | R `testthat` only | R `testthat` + C++ Catch2 |
 
 ## License
 

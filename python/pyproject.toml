@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=65", "pybind11>=2.12"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name            = "ucminf"
+version         = "0.1.0"
+description     = "UCMINF unconstrained nonlinear optimization — Python bindings"
+readme          = "README.md"
+license         = { text = "GPL-2.0-or-later" }
+requires-python = ">= 3.8"
+dependencies    = []
+
+[tool.setuptools]
+py-modules = []

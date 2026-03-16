@@ -1,0 +1,3 @@
+# src/Makevars
+# Use C++17 standard for the ucminfcpp package.
+CXX_STD = CXX17

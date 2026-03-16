@@ -1,6 +1,6 @@
 Package: ucminfcpp
-Title: Unconstrained Nonlinear Optimization via C and Rcpp
-Version: 0.1.0
+Title: Unconstrained Nonlinear Optimization via Modern C++ and Rcpp
+Version: 0.2.0
 Authors@R: c(
     person("Hans Bruun", "Nielsen", role = "aut",
            comment = "Original Fortran algorithm"),
@@ -9,11 +9,13 @@ Authors@R: c(
     person("ucminfcpp", "Maintainer", role = c("aut", "cre"),
            email = "maintainer@example.com")
   )
-Description: A migration of the UCMINF unconstrained nonlinear optimization
-    algorithm from Fortran+C+R to pure C and Rcpp. Phase 1 translates the
-    Fortran core to C; Phase 2 wraps it with an Rcpp interface. The algorithm
-    is of quasi-Newton type with BFGS updating of the inverse Hessian and a
-    soft line search with trust-region radius monitoring.
+Description: A modern C++17 reimplementation of the UCMINF unconstrained
+    nonlinear optimization algorithm. The core algorithm uses RAII,
+    STL containers (std::vector), and std::function for a clean,
+    pointer-free API. An Rcpp interface exposes the optimizer to R,
+    while pybind11 and CxxWrap bindings enable use from Python and Julia.
+    The algorithm is of quasi-Newton type with BFGS updating of the inverse
+    Hessian and a soft line search with trust-region radius monitoring.
 License: GPL (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

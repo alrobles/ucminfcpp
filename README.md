@@ -48,6 +48,30 @@ pip install pybind11
 pip install python/    # from the repository root
 ```
 
+Run the Python tests:
+
+```bash
+python python/test_ucminf.py
+# or, with pytest:
+python -m pytest python/test_ucminf.py -v
+```
+
+### Julia module
+
+```bash
+# 1. Build the shared library (requires CxxWrap.jl to be installed in Julia)
+PREFIX=$(julia -e 'using CxxWrap; print(CxxWrap.prefix_path())')
+cmake -S julia -B julia/build \
+      -DBUILD_JULIA=ON \
+      -DJlCxx_DIR="${PREFIX}/lib/cmake/JlCxx"
+cmake --build julia/build
+
+# 2. Activate the package and run the tests
+julia --project=julia julia/test/runtests.jl
+```
+
+See [julia/README.md](julia/README.md) for full details.
+
 ### Standalone C++ / tests
 
 ```bash
@@ -118,6 +142,21 @@ ucminf::Result result = ucminf::minimize({2.0, 0.5}, rosenbrock, ctrl);
 ```
 
 ### Julia
+
+```julia
+using Ucminfcpp
+
+fn = x -> (1 - x[1])^2 + 100*(x[2] - x[1]^2)^2
+gr = x -> [-400*x[1]*(x[2]-x[1]^2) - 2*(1-x[1]),
+            200*(x[2]-x[1]^2)]
+
+ctrl = Control()
+result = minimize(Float64[2.0, 0.5], fn, gr, ctrl)
+
+println(result.x())       # [1.0, 1.0]
+println(result.f())       # ~0.0
+println(result.message()) # "Stopped by small gradient (grtol)."
+```
 
 See [julia/README.md](julia/README.md) for build instructions and usage.
 

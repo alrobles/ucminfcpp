@@ -1,5 +1,4 @@
 from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
 import pybind11
 import os
 
@@ -33,6 +32,5 @@ setup(
     license="GPL-2.0-or-later",
     python_requires=">=3.8",
     ext_modules=[ext],
-    cmdclass={"build_ext": build_ext},
     zip_safe=False,
 )

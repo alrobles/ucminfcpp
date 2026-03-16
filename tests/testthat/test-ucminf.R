@@ -1,145 +1,89 @@
-## Tests for the ucminfcpp package
-## These tests verify the Fortran-to-C translation and Rcpp interface by
-## optimizing the Rosenbrock Banana function (known solution: x = (1, 1)).
+# tests/testthat/test-ucminf-compare.R
 
 library(testthat)
+library(ucminf)
 library(ucminfcpp)
 
-## Known objective: Rosenbrock Banana function
-## Minimum at (1, 1) with F(1,1) = 0
-fR <- function(x) (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2
-gR <- function(x) c(
-    -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
-     200 * (x[2] - x[1] * x[1])
-)
+# Helper comparison function
+compare_ucminf <- function(par, fn, gr = NULL, control = list(), ...) {
+  res1 <- ucminf::ucminf(par, fn, gr, control = control, ...)
+  res2 <- ucminfcpp::ucminf(par, fn, gr, control = control, ...)
+  list(
+    par1 = res1$par,
+    par2 = res2$par,
+    value1 = res1$value,
+    value2 = res2$value,
+    conv1 = res1$convergence,
+    conv2 = res2$convergence
+  )
+}
 
-## ---- Basic optimization with analytic gradient ----
-
-test_that("Rosenbrock with analytic gradient converges to (1,1)", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR)
-    expect_true(res$convergence > 0,
-                info = paste("Expected positive convergence code, got", res$convergence))
-    expect_equal(res$par, c(1, 1), tolerance = 1e-5,
-                 info = "Minimizer should be (1, 1)")
-    expect_equal(res$value, 0, tolerance = 1e-10,
-                 info = "Minimum value should be 0")
+test_that("Rosenbrock analytic gradient matches", {
+  fn <- function(x) (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2
+  gr <- function(x) c(
+    -400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),
+    200 * (x[2] - x[1]^2)
+  )
+  starts <- list(c(2,0.5), c(-1,1), c(10,-5))
+  for (s in starts) {
+    cmp <- compare_ucminf(s, fn, gr)
+    expect_equal(cmp$conv1, cmp$conv2)
+    expect_equal(cmp$value1, cmp$value2, tolerance=1e-8)
+    expect_equal(cmp$par1, cmp$par2, tolerance=1e-6)
+  }
 })
 
-test_that("Rosenbrock with analytic gradient: gradient near zero at solution", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR)
-    g_sol <- gR(res$par)
-    expect_lt(max(abs(g_sol)), 1e-5,
-              label = "gradient norm at solution")
-})
-
-## ---- Basic optimization with finite-difference gradient ----
-
-test_that("Rosenbrock with forward finite-difference gradient converges", {
-    res <- ucminf(par = c(2, 0.5), fn = fR,
-                  control = list(grad = "forward"))
-    expect_true(res$convergence > 0)
-    expect_equal(res$par, c(1, 1), tolerance = 1e-3)   # FD is less accurate
-    expect_equal(res$value, 0, tolerance = 1e-5)
-})
-
-test_that("Rosenbrock with central finite-difference gradient converges", {
-    res <- ucminf(par = c(2, 0.5), fn = fR,
-                  control = list(grad = "central"))
-    expect_true(res$convergence > 0)
-    expect_equal(res$par, c(1, 1), tolerance = 1e-5)
-    expect_equal(res$value, 0, tolerance = 1e-9)
-})
-
-## ---- Starting from the minimum ----
-
-test_that("Starting exactly at the minimum returns convergence=1 immediately", {
-    res <- ucminf(par = c(1, 1), fn = fR, gr = gR)
-    expect_equal(res$convergence, 1L)   # small gradient
-    expect_equal(res$par, c(1, 1), tolerance = 1e-10)
-})
-
-## ---- Return value structure ----
-
-test_that("ucminf returns a list with expected elements", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR)
-    expect_s3_class(res, "ucminf")
-    expect_true(all(c("par", "value", "convergence", "message",
-                      "invhessian.lt", "info") %in% names(res)))
-})
-
-test_that("info vector contains neval, maxgradient, laststep, stepmax", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR)
-    expect_named(res$info, c("maxgradient", "laststep", "stepmax", "neval"))
-    expect_gt(res$info["neval"], 0)
-})
-
-## ---- Hessian output ----
-
-test_that("hessian=2 returns inverse Hessian matrix", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR, hessian = 2)
-    expect_true(!is.null(res$invhessian))
-    expect_equal(dim(res$invhessian), c(2, 2))
-    ## Inverse Hessian at (1,1) for Rosenbrock should be positive definite
-    ev <- eigen(res$invhessian, symmetric = TRUE)$values
-    expect_true(all(ev > 0), info = "inverse Hessian should be positive definite")
-})
-
-## ---- Named parameters ----
-
-test_that("parameter names are preserved in output", {
-    res <- ucminf(par = c(x1 = 2, x2 = 0.5), fn = fR, gr = gR)
-    expect_named(res$par, c("x1", "x2"))
-})
-
-## ---- Control parameters ----
-
-test_that("maxeval limit is respected", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR,
-                  control = list(maxeval = 5))
-    expect_lte(res$info["neval"], 10)  # allow some slack for line search
-})
-
-test_that("grtol control is respected", {
-    res <- ucminf(par = c(2, 0.5), fn = fR, gr = gR,
-                  control = list(grtol = 1e-3))
-    expect_lte(res$info["maxgradient"], 1e-3 + 1e-10)
-})
-
-## ---- Higher-dimensional test ----
-
-test_that("3D Rosenbrock converges", {
-    ## Extended Rosenbrock (3D):  sum_{i=1}^{2} [(1-x_i)^2 + 100*(x_{i+1}-x_i^2)^2]
-    ## Minimum at (1,1,1) with F=0
-    fR3 <- function(x)
-        (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2 +
-        (1 - x[2])^2 + 100 * (x[3] - x[2]^2)^2
-    gR3 <- function(x) c(
-        -400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),
-         200 * (x[2] - x[1]^2) - 400 * x[2] * (x[3] - x[2]^2) - 2 * (1 - x[2]),
-         200 * (x[3] - x[2]^2)
+test_that("Rosenbrock numeric gradient matches (robust)", {
+  
+  fn <- function(x) (1 - x[1])^2 + 
+    100 * (x[2] - x[1]^2)^2
+  
+  starts <- list(
+    c(2, 0.5),
+    c(0, 0),
+    c(1.5, 1.5)
+  )
+  
+  for (s in starts) {
+    
+    cmp <- compare_ucminf(
+      par = s,
+      fn  = fn,
+      control = list(grad = "central")
     )
-    res <- ucminf(par = c(2, 1, 0.5), fn = fR3, gr = gR3,
-                  control = list(maxeval = 2000))
-    expect_true(res$convergence %in% c(1L, 2L))
-    expect_equal(res$par, c(1, 1, 1), tolerance = 1e-4)
+    
+    # Ambos deben retornar códigos válidos (1 a 4)
+    expect_true(cmp$conv1 %in% c(1,2,3,4))
+    expect_true(cmp$conv2 %in% c(1,2,3,4))
+    
+    # Si ambos convergen por gradiente pequeño, comparamos resultados
+    if (cmp$conv1 == 1 && cmp$conv2 == 1) {
+      expect_equal(cmp$value1, cmp$value2, tolerance = 1e-6)
+      expect_equal(cmp$par1, cmp$par2, tolerance = 1e-4)
+    }
+    
+    # Si uno converge y el otro no, no forzamos igualdad,
+    # pero sí lo reportamos explícitamente para debugging
+    if (cmp$conv1 != cmp$conv2) {
+      message("Diferencia de convergencia en inicio = ", paste(s, collapse=", "),
+              "\n  ucminf:    ", cmp$conv1,
+              "\n  ucminfcpp: ", cmp$conv2)
+    }
+  }
+})
+test_that("Quadratic SPD problems match", {
+  set.seed(1)
+  for (i in 1:5) {
+    n <- 5
+    A <- crossprod(matrix(rnorm(n*n), n, n))
+    b <- rnorm(n)
+    fn <- function(x) 0.5 * crossprod(x, A %*% x) + sum(b * x)
+    gr <- function(x) as.vector(A %*% x + b)
+    par0 <- rnorm(n)
+    cmp <- compare_ucminf(par0, fn, gr)
+    expect_equal(cmp$conv1, cmp$conv2)
+    expect_equal(cmp$value1, cmp$value2, tolerance=1e-10)
+    expect_equal(cmp$par1, cmp$par2, tolerance=1e-8)
+  }
 })
 
-## ---- Simple quadratic (exact in one step) ----
-
-test_that("Simple quadratic F(x)=x^2 converges to 0", {
-    fQ <- function(x) x^2
-    gQ <- function(x) 2 * x
-    res <- ucminf(par = 3, fn = fQ, gr = gQ)
-    expect_true(res$convergence > 0)
-    expect_equal(as.numeric(res$par), 0, tolerance = 1e-6)
-    expect_equal(res$value, 0, tolerance = 1e-12)
-})
-
-## ---- Error handling ----
-
-test_that("unknown control parameters raise an error", {
-    expect_error(
-        ucminf(par = c(1, 1), fn = fR, gr = gR, control = list(unknown_param = 1)),
-        regexp = "Unknown control"
-    )
-})

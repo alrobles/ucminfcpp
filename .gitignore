@@ -1,0 +1,19 @@
+# R package build artifacts
+*.o
+*.so
+*.dll
+src/*.o
+src/*.so
+src/*.dll
+
+# R build directories
+*.Rcheck/
+*.tar.gz
+
+# IDE files
+.Rproj.user/
+*.Rproj
+
+# System
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+Package: ucminfcpp
+Title: Unconstrained Nonlinear Optimization via C and Rcpp
+Version: 0.1.0
+Authors@R: c(
+    person("Hans Bruun", "Nielsen", role = "aut",
+           comment = "Original Fortran algorithm"),
+    person("Stig Bousgaard", "Mortensen", role = "aut",
+           comment = "Original R/Fortran/C implementation"),
+    person("ucminfcpp", "Maintainer", role = c("aut", "cre"),
+           email = "maintainer@example.com")
+  )
+Description: A migration of the UCMINF unconstrained nonlinear optimization
+    algorithm from Fortran+C+R to pure C and Rcpp. Phase 1 translates the
+    Fortran core to C; Phase 2 wraps it with an Rcpp interface. The algorithm
+    is of quasi-Newton type with BFGS updating of the inverse Hessian and a
+    soft line search with trust-region radius monitoring.
+License: GPL (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    Rcpp (>= 1.0.0)
+LinkingTo:
+    Rcpp
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

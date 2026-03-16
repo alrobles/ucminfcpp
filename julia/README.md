@@ -4,6 +4,20 @@ Julia bindings for the **ucminf** C++ unconstrained nonlinear optimization
 library.  The bindings use [CxxWrap.jl](https://github.com/JuliaInterop/CxxWrap.jl)
 (JlCxx).
 
+## Directory layout
+
+```
+julia/
+├── Project.toml            # Julia package manifest
+├── src/
+│   └── Ucminfcpp.jl        # Julia module (wraps the CxxWrap shared lib)
+├── test/
+│   └── runtests.jl         # Test suite
+├── ucminf_julia.cpp        # C++ source for the shared library
+├── CMakeLists.txt          # CMake build for the shared library
+└── README.md               # This file
+```
+
 ## Prerequisites
 
 * Julia ≥ 1.9
@@ -12,31 +26,30 @@ library.  The bindings use [CxxWrap.jl](https://github.com/JuliaInterop/CxxWrap.
 * A C++17-capable compiler (GCC ≥ 9 or Clang ≥ 10)
 * CMake ≥ 3.16
 
-## Building the shared library
+## Step 1 — Build the shared library
 
 ```bash
-# 1. Find the JlCxx CMake prefix from Julia
+# From the repository root
 PREFIX=$(julia -e 'using CxxWrap; print(CxxWrap.prefix_path())')
 
-# 2. Configure and build
-cmake -S . -B build \
+cmake -S julia -B julia/build \
       -DBUILD_JULIA=ON \
       -DJlCxx_DIR="${PREFIX}/lib/cmake/JlCxx"
-cmake --build build
+cmake --build julia/build
 ```
 
-The resulting shared library (`ucminf_julia.so` / `.dylib` / `.dll`) can be
-loaded directly from Julia.
+The resulting shared library (`libucminf_julia.so` / `.dylib` / `.dll`) is
+placed in `julia/build/`.
 
-## Usage
+## Step 2 — Use the Julia package
 
 ```julia
-using CxxWrap
+# Activate the package (from the repository root)
+import Pkg
+Pkg.activate("julia")
+Pkg.instantiate()
 
-# Load the shared library
-@wrapmodule(() -> joinpath(@__DIR__, "build", "julia", "libucminf_julia"))
-
-@initcxx
+using Ucminfcpp
 
 # Objective function (Rosenbrock Banana)
 fn = x -> (1 - x[1])^2 + 100*(x[2] - x[1]^2)^2
@@ -63,6 +76,12 @@ println("message = ", result.message())
 ```julia
 # Omit `gr`; a central finite difference is used automatically.
 result = minimize(Float64[2.0, 0.5], fn, ctrl)
+```
+
+## Running the tests
+
+```bash
+julia --project=julia julia/test/runtests.jl
 ```
 
 ## Control parameters

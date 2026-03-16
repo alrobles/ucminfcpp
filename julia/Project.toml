@@ -1,0 +1,11 @@
+name = "Ucminfcpp"
+uuid = "d0a5eaaf-ca83-4951-8737-2cbc58d1b2c9"
+authors = ["ucminfcpp Maintainer"]
+version = "0.2.0"
+
+[deps]
+CxxWrap = "1f15a43c-97ca-5a2a-ae31-89f07a497df4"
+
+[compat]
+CxxWrap = "0.14, 0.15, 0.16"
+julia = "1.9"

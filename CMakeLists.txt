@@ -17,6 +17,15 @@ target_include_directories(ucminf_core PUBLIC
 )
 target_compile_features(ucminf_core PUBLIC cxx_std_17)
 
+# Aggressive optimisation flags for numerical workloads.
+# Applied only for GCC-compatible compilers (GCC, Clang, AppleClang).
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    target_compile_options(ucminf_core PRIVATE
+        -O3
+        -funroll-loops
+    )
+endif()
+
 # ---------------------------------------------------------------------------
 # Python bindings (optional, requires pybind11)
 # ---------------------------------------------------------------------------

@@ -6,9 +6,11 @@ Authors@R: c(
            comment = "Original Fortran algorithm"),
     person("Stig Bousgaard", "Mortensen", role = "aut",
            comment = "Original R/Fortran/C implementation"),
-    person("ucminfcpp", "Maintainer", role = c("aut", "cre"),
-           email = "maintainer@example.com")
-  )
+    person("Angel Robles", "Maintainer", role = c("aut", "cre"),
+    email = "a.l.robles.fernandez@gmail.com"),
+    person("K Hervé", "Dakpo", email = "k-herve.dakpo@inrae.fr", 
+    role = c("ctb"))
+    )
 Description: A modern C++17 reimplementation of the UCMINF unconstrained
     nonlinear optimization algorithm. The core algorithm uses RAII,
     STL containers (std::vector), and std::function for a clean,

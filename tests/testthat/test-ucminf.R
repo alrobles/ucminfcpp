@@ -1,10 +1,14 @@
 # tests/testthat/test-ucminf-compare.R
 
 library(testthat)
-library(ucminf)
 library(ucminfcpp)
 
 # Helper comparison function
+
+testthat::skip_if_not_installed("ucminf")
+library(ucminf)
+
+
 compare_ucminf <- function(par, fn, gr = NULL, control = list(), ...) {
   res1 <- ucminf::ucminf(par, fn, gr, control = control, ...)
   res2 <- ucminfcpp::ucminf(par, fn, gr, control = control, ...)
@@ -19,6 +23,8 @@ compare_ucminf <- function(par, fn, gr = NULL, control = list(), ...) {
 }
 
 test_that("Rosenbrock analytic gradient matches", {
+  
+  
   fn <- function(x) (1 - x[1])^2 + 100 * (x[2] - x[1]^2)^2
   gr <- function(x) c(
     -400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),

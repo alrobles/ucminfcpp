@@ -93,3 +93,55 @@ test_that("Quadratic SPD problems match", {
   }
 })
 
+test_that("Numeric forward-diff gradient matches ucminf (Rosenbrock)", {
+  fn <- function(x) (1-x[1])^2 + 100*(x[2]-x[1]^2)^2
+  testthat::skip_if_not_installed("ucminf")
+  r1 <- ucminf::ucminf(c(2, 0.5), fn)
+  r2 <- ucminfcpp::ucminf(c(2, 0.5), fn)
+  expect_equal(r1$par, r2$par, tolerance = 1e-5)
+})
+
+test_that("Numeric central-diff gradient matches ucminf (Rosenbrock)", {
+  fn <- function(x) (1-x[1])^2 + 100*(x[2]-x[1]^2)^2
+  testthat::skip_if_not_installed("ucminf")
+  r1 <- ucminf::ucminf(c(2, 0.5), fn)
+  r2 <- ucminfcpp::ucminf(c(2, 0.5), fn, control = list(grad = "central"))
+  expect_equal(r1$par, r2$par, tolerance = 1e-5)
+})
+
+test_that("hessian=2 returns invhessian matrix", {
+  fn <- function(x) (1-x[1])^2 + 100*(x[2]-x[1]^2)^2
+  gr <- function(x) c(-400*x[1]*(x[2]-x[1]^2)-2*(1-x[1]), 200*(x[2]-x[1]^2))
+  res <- ucminfcpp::ucminf(c(2, 0.5), fn, gr, hessian = 2)
+  expect_true(!is.null(res$invhessian))
+  expect_equal(dim(res$invhessian), c(2, 2))
+  expect_true(isSymmetric(res$invhessian))
+})
+
+test_that("hessian=3 returns both invhessian and hessian", {
+  fn <- function(x) (1-x[1])^2 + 100*(x[2]-x[1]^2)^2
+  gr <- function(x) c(-400*x[1]*(x[2]-x[1]^2)-2*(1-x[1]), 200*(x[2]-x[1]^2))
+  res <- ucminfcpp::ucminf(c(2, 0.5), fn, gr, hessian = 3)
+  expect_true(!is.null(res$hessian))
+  expect_equal(dim(res$hessian), c(2, 2))
+})
+
+test_that("named par vector preserves names on output", {
+  fn <- function(x) (1-x["a"])^2 + 100*(x["b"]-x["a"]^2)^2
+  gr <- function(x) {
+    setNames(c(-400*x["a"]*(x["b"]-x["a"]^2)-2*(1-x["a"]),
+               200*(x["b"]-x["a"]^2)), c("a","b"))
+  }
+  x0 <- c(a=2, b=0.5)
+  res <- ucminfcpp::ucminf(x0, fn, gr)
+  expect_named(res$par, c("a","b"))
+})
+
+test_that("convergence code -7 for non-PD invhessian.lt", {
+  fn <- function(x) sum(x^2)
+  gr <- function(x) 2*x
+  bad_invh <- c(-1, 0, -1)  # not positive definite for n=2
+  expect_error(ucminfcpp::ucminf(c(1, 1), fn, gr,
+                control = list(invhessian.lt = bad_invh)))
+})
+

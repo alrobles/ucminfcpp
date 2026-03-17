@@ -11,7 +11,7 @@
 #' @param has_gr Logical: TRUE if gr is provided.
 #' @param control Named list of control parameters:
 #'   \code{grtol}, \code{xtol}, \code{stepmax}, \code{maxeval},
-#'   \code{grad}, \code{gradstep}, \code{invhessian_lt}.
+#'   \code{grad_type}, \code{gradstep}, \code{invhessian_lt}.
 #'
 #' @return A list with elements \code{par}, \code{value}, \code{convergence},
 #'   \code{neval}, \code{maxgradient}, \code{laststep}, \code{stepmax},
@@ -20,5 +20,32 @@
 #' @keywords internal
 ucminf_cpp <- function(par, fn, gr, has_gr, control) {
     .Call(`_ucminfcpp_ucminf_cpp`, par, fn, gr, has_gr, control)
+}
+
+#' Optimize using a combined value+gradient R function
+#'
+#' Internal function called by \code{\link{ucminf}} when \code{fdfun} is
+#' supplied. Use \code{ucminf()} instead.
+#'
+#' @param par    Numeric starting vector.
+#' @param fdfun  R function \code{fdfun(x)} returning
+#'   \code{list(f = scalar, g = numeric_vector_of_length_n)}.
+#' @param control Named list of control parameters (same as \code{ucminf_cpp}).
+#' @return Same list structure as \code{ucminf_cpp}.
+#' @keywords internal
+ucminf_fdf_cpp <- function(par, fdfun, control) {
+    .Call(`_ucminfcpp_ucminf_fdf_cpp`, par, fdfun, control)
+}
+
+#' Optimize using a compiled C++ objective function passed as an external pointer
+#'
+#' @param par     Numeric starting vector.
+#' @param xptr    An \code{externalptr} wrapping a heap-allocated
+#'   \code{ucminf::ObjFun*} created via \code{Rcpp::XPtr<ucminf::ObjFun>}.
+#' @param control Named list of control parameters (same as \code{ucminf_cpp}).
+#' @return Same list structure as \code{ucminf_cpp}.
+#' @keywords internal
+ucminf_xptr_cpp <- function(par, xptr, control) {
+    .Call(`_ucminfcpp_ucminf_xptr_cpp`, par, xptr, control)
 }
 

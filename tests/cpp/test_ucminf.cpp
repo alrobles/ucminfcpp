@@ -9,6 +9,8 @@
  *  - Control parameter validation (exception paths)
  *  - Warm-start with a custom initial inverse Hessian
  *  - 1-D and N-D problems
+ *  - Template API (minimize_direct<F>) and workspace reuse
+ *  - Consistency between minimize() and minimize_direct<F>()
  */
 
 #include <catch2/catch_test_macros.hpp>
@@ -78,7 +80,7 @@ static void rosenbrock3_fdf(const std::vector<double>& x,
 }
 
 // ---------------------------------------------------------------------------
-// Test cases
+// Test cases — original minimize() API
 // ---------------------------------------------------------------------------
 
 TEST_CASE("1-D quadratic converges to 0", "[basic]")
@@ -226,3 +228,100 @@ TEST_CASE("status_message returns a non-empty string for every Status", "[status
         CHECK(!ucminf::status_message(s).empty());
     }
 }
+
+// ---------------------------------------------------------------------------
+// Test cases — template API minimize_direct<F>()
+// ---------------------------------------------------------------------------
+
+TEST_CASE("minimize_direct with plain function pointer matches minimize()", "[template_api]")
+{
+    // Plain function pointer — no std::function wrapper, fully inlinable.
+    ucminf::Result r1 = ucminf::minimize({2.0, 0.5}, rosenbrock_fdf);
+    ucminf::Result r2 = ucminf::minimize_direct({2.0, 0.5}, rosenbrock_fdf);
+
+    REQUIRE(static_cast<int>(r2.status) > 0);
+    CHECK(r1.status  == r2.status);
+    CHECK(r1.n_eval  == r2.n_eval);
+    CHECK_THAT(r2.x[0], WithinAbs(1.0, 1e-5));
+    CHECK_THAT(r2.x[1], WithinAbs(1.0, 1e-5));
+    CHECK_THAT(r2.f,    WithinAbs(0.0, 1e-10));
+}
+
+TEST_CASE("minimize_direct with lambda produces correct result", "[template_api]")
+{
+    // Captureless lambda — can be inlined by the compiler.
+    auto quad = [](const std::vector<double>& x,
+                   std::vector<double>& g,
+                   double& f)
+    {
+        f    = x[0] * x[0];
+        g[0] = 2.0 * x[0];
+    };
+
+    ucminf::Result res = ucminf::minimize_direct({3.0}, quad);
+    REQUIRE(static_cast<int>(res.status) > 0);
+    CHECK_THAT(res.x[0], WithinAbs(0.0, 1e-6));
+    CHECK_THAT(res.f,    WithinAbs(0.0, 1e-12));
+}
+
+TEST_CASE("minimize_direct with capturing lambda (functor state)", "[template_api]")
+{
+    // Verify that capturing lambdas work correctly too.
+    const double scale = 4.0; // captured by value
+    auto scaled_quad = [scale](const std::vector<double>& x,
+                                std::vector<double>& g,
+                                double& f)
+    {
+        f    = scale * x[0] * x[0];
+        g[0] = 2.0 * scale * x[0];
+    };
+
+    ucminf::Result res = ucminf::minimize_direct({5.0}, scaled_quad);
+    REQUIRE(static_cast<int>(res.status) > 0);
+    CHECK_THAT(res.x[0], WithinAbs(0.0, 1e-6));
+}
+
+TEST_CASE("minimize_direct with 5-D sum of squares converges to zero", "[template_api]")
+{
+    ucminf::Result res = ucminf::minimize_direct(
+        {1.0, -2.0, 3.0, -4.0, 5.0}, sum_of_squares_fdf);
+    REQUIRE(static_cast<int>(res.status) > 0);
+    for (int i = 0; i < 5; ++i)
+        CHECK_THAT(res.x[i], WithinAbs(0.0, 1e-5));
+    CHECK_THAT(res.f, WithinAbs(0.0, 1e-10));
+}
+
+TEST_CASE("minimize_direct invalid arguments throw std::invalid_argument", "[template_api][errors]")
+{
+    // Empty x
+    CHECK_THROWS_AS(ucminf::minimize_direct({}, quadratic_fdf), std::invalid_argument);
+
+    // stepmax <= 0
+    ucminf::Control c1; c1.stepmax = 0.0;
+    CHECK_THROWS_AS(ucminf::minimize_direct({1.0}, quadratic_fdf, c1),
+                    std::invalid_argument);
+}
+
+TEST_CASE("minimize_direct result has correctly-sized inv_hessian_lt", "[template_api]")
+{
+    ucminf::Result res = ucminf::minimize_direct({2.0, 0.5}, rosenbrock_fdf);
+    int n  = static_cast<int>(res.x.size());
+    int nn = n * (n + 1) / 2;
+    CHECK(static_cast<int>(res.inv_hessian_lt.size()) == nn);
+}
+
+TEST_CASE("minimize_direct and minimize agree on 3-D Rosenbrock", "[template_api]")
+{
+    ucminf::Control ctrl;
+    ctrl.maxeval = 2000;
+
+    ucminf::Result r1 = ucminf::minimize({2.0, 1.0, 0.5}, rosenbrock3_fdf, ctrl);
+    ucminf::Result r2 = ucminf::minimize_direct({2.0, 1.0, 0.5}, rosenbrock3_fdf, ctrl);
+
+    REQUIRE(static_cast<int>(r2.status) > 0);
+    CHECK(r1.status == r2.status);
+    CHECK(r1.n_eval == r2.n_eval);
+    for (int i = 0; i < 3; ++i)
+        CHECK_THAT(r2.x[i], WithinAbs(r1.x[i], 1e-10));
+}
+

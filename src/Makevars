@@ -1,3 +1,7 @@
 # src/Makevars
 # Use C++17 standard for the ucminfcpp package.
 CXX_STD = CXX17
+# Aggressive optimisation flags for numerical workloads.
+# -O3          : full optimisation (supersedes R's default -O2)
+# -funroll-loops: unroll small fixed-count inner loops in the BLAS kernels
+PKG_CXXFLAGS = -O3 -funroll-loops

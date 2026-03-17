@@ -1,6 +1,6 @@
 Package: ucminfcpp
 Title: Unconstrained Nonlinear Optimization via Modern C++ and Rcpp
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person("Hans Bruun", "Nielsen", role = "aut",
            comment = "Original Fortran algorithm"),
@@ -28,5 +28,6 @@ LinkingTo:
     Rcpp
 Suggests:
     testthat (>= 3.0.0),
-    ucminf
+    ucminf,
+    microbenchmark
 Config/testthat/edition: 3

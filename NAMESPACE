@@ -2,5 +2,7 @@
 
 S3method(print,ucminf)
 export(ucminf)
+export(ucminf_control)
+export(ucminf_xptr)
 importFrom(Rcpp,sourceCpp)
 useDynLib(ucminfcpp, .registration = TRUE)

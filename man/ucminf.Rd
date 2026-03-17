@@ -4,19 +4,25 @@
 \alias{ucminf}
 \title{General-Purpose Unconstrained Non-Linear Optimization (C/Rcpp)}
 \usage{
-ucminf(par, fn, gr = NULL, ..., control = list(), hessian = 0)
+ucminf(par, fn = NULL, gr = NULL, ..., fdfun = NULL, control = list(), hessian = 0)
 }
 \arguments{
 \item{par}{Initial estimate of the minimum (numeric vector).}
 
-\item{fn}{Objective function to be minimized. Must return a scalar.}
+\item{fn}{Objective function to be minimized. Must return a scalar.
+Ignored when \code{fdfun} is supplied.}
 
 \item{gr}{Gradient function. If \code{NULL} a finite-difference
-approximation is used.}
+approximation is used. Ignored when \code{fdfun} is supplied.}
 
 \item{...}{Optional arguments passed to \code{fn} and \code{gr}.}
 
-\item{control}{A list of control parameters (see Details).}
+\item{fdfun}{Optional combined value+gradient function
+\code{fdfun(x)} returning \code{list(f = scalar, g = numeric_vector)}.
+When supplied, \code{fn} and \code{gr} are ignored.}
+
+\item{control}{A list of control parameters (see Details), or a
+\code{\link{ucminf_control}} object.}
 
 \item{hessian}{Integer controlling Hessian output:
 \describe{

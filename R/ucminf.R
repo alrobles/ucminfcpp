@@ -2,6 +2,41 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
+#' Build a validated control list for ucminf()
+#'
+#' Returns a named list of control parameters that can be passed directly
+#' to \code{ucminf()}, \code{ucminf_xptr()}, etc.
+#'
+#' @param trace       Integer. If > 0, print convergence info. Default 0.
+#' @param grtol       Gradient tolerance. Default 1e-6.
+#' @param xtol        Step tolerance. Default 1e-12.
+#' @param stepmax     Initial trust-region radius. Default 1.
+#' @param maxeval     Maximum function evaluations. Default 500.
+#' @param grad        Finite-difference type: "forward" or "central". Default "forward".
+#' @param gradstep    Length-2 step vector. Default c(1e-6, 1e-8).
+#' @param invhessian.lt Packed lower-triangle of initial inverse Hessian. Default NULL.
+#' @return A list of class \code{"ucminf_control"}.
+#' @export
+ucminf_control <- function(trace = 0, grtol = 1e-6, xtol = 1e-12,
+                            stepmax = 1, maxeval = 500L,
+                            grad = c("forward", "central"),
+                            gradstep = c(1e-6, 1e-8),
+                            invhessian.lt = NULL) {
+    grad <- match.arg(grad)
+    stopifnot(length(gradstep) == 2, maxeval > 0, grtol > 0, xtol > 0, stepmax > 0)
+    structure(
+        list(trace         = as.integer(trace),
+             grtol         = as.double(grtol),
+             xtol          = as.double(xtol),
+             stepmax       = as.double(stepmax),
+             maxeval       = as.integer(maxeval),
+             grad          = grad,
+             gradstep      = as.double(gradstep),
+             invhessian.lt = invhessian.lt),
+        class = "ucminf_control"
+    )
+}
+
 #' General-Purpose Unconstrained Non-Linear Optimization (C/Rcpp)
 #'
 #' An implementation of the UCMINF algorithm translated from Fortran to C and
@@ -23,10 +58,15 @@ NULL
 #'
 #' @param par Initial estimate of the minimum (numeric vector).
 #' @param fn Objective function to be minimized. Must return a scalar.
+#'   Ignored when \code{fdfun} is supplied.
 #' @param gr Gradient function. If \code{NULL} a finite-difference
-#'   approximation is used.
+#'   approximation is used. Ignored when \code{fdfun} is supplied.
 #' @param ... Optional arguments passed to \code{fn} and \code{gr}.
-#' @param control A list of control parameters (see Details).
+#' @param fdfun Optional combined value+gradient function
+#'   \code{fdfun(x)} returning \code{list(f = scalar, g = numeric_vector)}.
+#'   When supplied, \code{fn} and \code{gr} are ignored.
+#' @param control A list of control parameters (see Details), or a
+#'   \code{\link{ucminf_control}} object.
 #' @param hessian Integer controlling Hessian output:
 #'   \describe{
 #'     \item{0}{No Hessian (default).}
@@ -99,36 +139,71 @@ NULL
 #'
 #' ## Find minimum with finite-difference gradient
 #' ucminf(par = c(2, 0.5), fn = fR)
-ucminf <- function(par, fn, gr = NULL, ..., control = list(), hessian = 0) {
+ucminf <- function(par, fn = NULL, gr = NULL, ..., fdfun = NULL,
+                   control = list(), hessian = 0) {
 
-    ## Default control values
-    con <- list(
-        trace          = 0,
-        grtol          = 1e-6,
-        xtol           = 1e-12,
-        stepmax        = 1,
-        maxeval        = 500,
-        grad           = "forward",
-        gradstep       = c(1e-6, 1e-8),
-        invhessian.lt  = NULL
-    )
+    ## Resolve control — accept ucminf_control objects directly
+    if (inherits(control, "ucminf_control")) {
+        con <- control
+    } else {
+        ## Default control values
+        con <- list(
+            trace          = 0,
+            grtol          = 1e-6,
+            xtol           = 1e-12,
+            stepmax        = 1,
+            maxeval        = 500,
+            grad           = "forward",
+            gradstep       = c(1e-6, 1e-8),
+            invhessian.lt  = NULL
+        )
 
-    ## Apply user overrides
-    unknown <- setdiff(names(control), names(con))
-    if (length(unknown) > 0)
-        stop("Unknown control parameters: ", paste(unknown, collapse = ", "))
-    con[names(control)] <- control
+        ## Apply user overrides
+        unknown <- setdiff(names(control), names(con))
+        if (length(unknown) > 0)
+            stop("Unknown control parameters: ", paste(unknown, collapse = ", "))
+        con[names(control)] <- control
 
-    ## Validate
-    stopifnot(length(con$gradstep) == 2)
-    stopifnot(con$grad %in% c("forward", "central"))
+        ## Validate
+        stopifnot(length(con$gradstep) == 2)
+        stopifnot(con$grad %in% c("forward", "central"))
+    }
 
-    ## Wrap fn and gr to pass ... arguments
-    fn_wrapped <- function(x) fn(x, ...)
-    gr_wrapped <- if (!is.null(gr)) function(x) gr(x, ...) else NULL
+    ## Restore names of par helper
+    nm <- names(par)
+
+    ## ---------- fdfun path (P2-B) ----------
+    if (!is.null(fdfun)) {
+        ctrl_fdf <- list(
+            grtol         = as.double(con$grtol),
+            xtol          = as.double(con$xtol),
+            stepmax       = as.double(con$stepmax),
+            maxeval       = as.integer(con$maxeval),
+            invhessian_lt = con$invhessian.lt
+        )
+        res <- ucminf_fdf_cpp(
+            par     = as.double(par),
+            fdfun   = fdfun,
+            control = ctrl_fdf
+        )
+        return(.ucminf_postprocess(res, par, nm, hessian, con$trace))
+    }
+
+    ## ---------- standard fn/gr path ----------
+    if (is.null(fn))
+        stop("fn must be supplied when fdfun is NULL")
+
+    ## P1-B: Avoid extra R closure when ... is empty
+    if (...length() == 0L) {
+        fn_wrapped <- fn
+        gr_wrapped <- gr
+    } else {
+        fn_wrapped <- function(x) fn(x, ...)
+        gr_wrapped <- if (!is.null(gr)) function(x) gr(x, ...) else NULL
+    }
 
     ## Determine gradient type code
-    has_gr   <- !is.null(gr_wrapped)
+    has_gr    <- !is.null(gr_wrapped)
     grad_type <- if (has_gr) 0L else if (con$grad == "forward") 1L else 2L
 
     ## Build control list for the Rcpp function
@@ -144,14 +219,18 @@ ucminf <- function(par, fn, gr = NULL, ..., control = list(), hessian = 0) {
 
     ## Call the Rcpp optimizer
     res <- ucminf_cpp(
-        par    = as.double(par),
-        fn     = fn_wrapped,
-        gr     = if (has_gr) gr_wrapped else fn_wrapped, # placeholder, has_gr=FALSE
-        has_gr = has_gr,
+        par     = as.double(par),
+        fn      = fn_wrapped,
+        gr      = if (has_gr) gr_wrapped else fn_wrapped, # placeholder when has_gr=FALSE
+        has_gr  = has_gr,
         control = ctrl
     )
 
-    ## Decode convergence
+    .ucminf_postprocess(res, par, nm, hessian, con$trace)
+}
+
+## Internal helper: decode result and build the "ucminf" S3 object
+.ucminf_postprocess <- function(res, par, nm, hessian, trace) {
     icontr <- res$convergence
     msg <- switch(as.character(icontr),
         `1`  = "Stopped by small gradient (grtol).",
@@ -167,8 +246,6 @@ ucminf <- function(par, fn, gr = NULL, ..., control = list(), hessian = 0) {
         "Unknown convergence code."
     )
 
-    ## Restore names of par
-    nm <- names(par)
     sol <- res$par
     if (!is.null(nm)) names(sol) <- nm
 
@@ -183,18 +260,14 @@ ucminf <- function(par, fn, gr = NULL, ..., control = list(), hessian = 0) {
         n   <- length(par)
         ilt <- res$invhessian_lt
 
-        ## Optional Hessian output
-        if (isTRUE(hessian) || hessian == 2 || hessian == 3) {
-            n2 <- n * n
-            ## Reconstruct full symmetric matrix from lower triangle
+        if (isTRUE(hessian) || hessian >= 2) {
             COV <- matrix(0, n, n)
             lt_idx <- lower.tri(COV, diag = TRUE)
             COV[lt_idx] <- ilt
             COV <- t(COV) + COV - diag(diag(COV))
             ans$invhessian <- COV
-            if (!is.null(nm)) {
+            if (!is.null(nm))
                 rownames(ans$invhessian) <- colnames(ans$invhessian) <- nm
-            }
         }
         if (hessian == 3)
             ans$hessian <- solve(ans$invhessian)
@@ -208,7 +281,7 @@ ucminf <- function(par, fn, gr = NULL, ..., control = list(), hessian = 0) {
         )
     }
 
-    if (con$trace > 0) {
+    if (trace > 0) {
         cat(paste(ans$message, "\n"))
         if (!is.null(ans$info))
             print(ans$info)

@@ -4,7 +4,15 @@
 \alias{ucminf}
 \title{General-Purpose Unconstrained Non-Linear Optimization (C/Rcpp)}
 \usage{
-ucminf(par, fn = NULL, gr = NULL, ..., fdfun = NULL, control = list(), hessian = 0)
+ucminf(
+  par,
+  fn = NULL,
+  gr = NULL,
+  ...,
+  fdfun = NULL,
+  control = list(),
+  hessian = 0
+)
 }
 \arguments{
 \item{par}{Initial estimate of the minimum (numeric vector).}

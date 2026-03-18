@@ -25,7 +25,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-
 // ucminf_fdf_cpp
 List ucminf_fdf_cpp(NumericVector par, Function fdfun, List control);
 RcppExport SEXP _ucminfcpp_ucminf_fdf_cpp(SEXP parSEXP, SEXP fdfunSEXP, SEXP controlSEXP) {
@@ -39,7 +38,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-
 // ucminf_xptr_cpp
 List ucminf_xptr_cpp(NumericVector par, SEXP xptr, List control);
 RcppExport SEXP _ucminfcpp_ucminf_xptr_cpp(SEXP parSEXP, SEXP xptrSEXP, SEXP controlSEXP) {
@@ -47,15 +45,16 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type par(parSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type xptr(xptrSEXP);
     Rcpp::traits::input_parameter< List >::type control(controlSEXP);
-    rcpp_result_gen = Rcpp::wrap(ucminf_xptr_cpp(par, xptrSEXP, control));
+    rcpp_result_gen = Rcpp::wrap(ucminf_xptr_cpp(par, xptr, control));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ucminfcpp_ucminf_cpp",      (DL_FUNC) &_ucminfcpp_ucminf_cpp,      5},
-    {"_ucminfcpp_ucminf_fdf_cpp",  (DL_FUNC) &_ucminfcpp_ucminf_fdf_cpp,  3},
+    {"_ucminfcpp_ucminf_cpp", (DL_FUNC) &_ucminfcpp_ucminf_cpp, 5},
+    {"_ucminfcpp_ucminf_fdf_cpp", (DL_FUNC) &_ucminfcpp_ucminf_fdf_cpp, 3},
     {"_ucminfcpp_ucminf_xptr_cpp", (DL_FUNC) &_ucminfcpp_ucminf_xptr_cpp, 3},
     {NULL, NULL, 0}
 };

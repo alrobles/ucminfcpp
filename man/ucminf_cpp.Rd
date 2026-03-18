@@ -17,7 +17,7 @@ ucminf_cpp(par, fn, gr, has_gr, control)
 
 \item{control}{Named list of control parameters:
 \code{grtol}, \code{xtol}, \code{stepmax}, \code{maxeval},
-\code{grad}, \code{gradstep}, \code{invhessian_lt}.}
+\code{grad_type}, \code{gradstep}, \code{invhessian_lt}.}
 }
 \value{
 A list with elements \code{par}, \code{value}, \code{convergence},

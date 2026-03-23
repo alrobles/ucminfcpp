@@ -65,7 +65,8 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="ucminfcpp">ucminfcpp<a class="anchor" aria-label="anchor" href="#ucminfcpp"></a>
 </h1></div>
-<p><code>ucminfcpp</code> is an R package that provides unconstrained nonlinear optimization through a modern <strong>C++17</strong> reimplementation of the classic Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> algorithm. It is a <strong>drop-in replacement</strong> for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> and was primarily developed to power the <a href="https://github.com/alrobles/nicher" class="external-link"><code>@alrobles/nicher</code></a> and <a href="https://github.com/alrobles/xsdmMle" class="external-link"><code>@alrobles/xsdmMle</code></a> packages.</p>
+<p><code>ucminfcpp</code> is an R package that provides unconstrained nonlinear optimization through a modern <strong>C++17</strong> reimplementation of the classic Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> algorithm. It is a <strong>drop-in replacement</strong> for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code>.</p>
+<p>The reimplementation of the cpp library offers multi-language support (<a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html"><code>python</code></a>and <a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html"><code>julia</code></a>).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -101,9 +102,32 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Are the results the same? "</span>, <span class="va">identical_result</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p><code>ucminfcpp</code> provides the <code><a href="reference/ucminf.html">ucminf()</a></code> function for general-purpose unconstrained nonlinear optimization. The algorithm is a quasi-Newton method with BFGS updating of the inverse Hessian and a soft line search with adaptive trust-region radius monitoring.</p>
+<p>It is designed as a drop-in replacement for the original Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> function. The original algorithm was written in Fortran by Hans Bruun Nielsen.</p>
+</div>
+<div class="section level2">
+<h2 id="complete-credit">Complete Credit<a class="anchor" aria-label="anchor" href="#complete-credit"></a>
+</h2>
+<p>This reimplementation is based on the original repository <a href="https://github.com/hdakpo/ucminf" class="external-link">ucminf</a>.</p>
+<p>The implementation and techniques are derived from the original Fortran-based algorithm described by: Nielsen, H. B. (2000) UCMINF - An Algorithm For Unconstrained, Nonlinear Optimization, Report IMM-REP-2000-19, Department of Mathematical Modelling, Technical University of Denmark.</p>
+<ul>
+<li><p>You can consult this document <a href="http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf" class="external-link"><code>here</code></a>,</p></li>
+<li><p>The original Fortran source code is archived <a href="https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f" class="external-link"><code>here</code></a>.</p></li>
+</ul>
+<p>Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages. The structure of <code>ucminf</code> in R draws from the <a href="https://github.com/cran/FortranCallsR" class="external-link">FortranCallsR</a> package by Diethelm Wuertz.</p>
+</div>
+<div class="section level2">
 <h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
 </h2>
-<p>For detailed walkthroughs, performance benchmarks, and language-specific guides (C++, Python, Julia), visit the <a href="https://alrobles.github.io/ucminfcpp/"><code>ucminfcpp</code> documentation site</a>.</p>
+<ul>
+<li><p>For detailed walkthroughs and performance benchmarks visit <a href="https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html"><code>ucminfcpp</code> documentation site</a></p></li>
+<li><p>For information about portability visit <a href="https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html">Portability from Fortran to C++</a></p></li>
+<li><p>For use in C++ visit <a href="https://alrobles.github.io/ucminfcpp/articles/cpp_use.html"><code>C++</code> documentation site</a></p></li>
+<li><p>For use in Python visit <a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html"><code>python</code> documentation site</a></p></li>
+<li><p>For use in Julia visit <a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html"><code>julia</code> documentation site</a></p></li>
+</ul>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

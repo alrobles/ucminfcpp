@@ -7,3 +7,7 @@
 ^tests/cpp$
 ^src/ucminf_core.hpp$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

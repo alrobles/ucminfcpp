@@ -62,14 +62,29 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="ucminfcpp">ucminfcpp<a class="anchor" aria-label="anchor" href="#ucminfcpp"></a>
+  <main id="main" class="col-md-9">
+<div class="section level1">
+<div class="page-header"><h1 id="ucminfcpp">
+<code>ucminfcpp</code><a class="anchor" aria-label="anchor" href="#ucminfcpp"></a>
 </h1></div>
-<p><code>ucminfcpp</code> is an R package that provides unconstrained nonlinear optimization through a modern <strong>C++17</strong> reimplementation of the classic Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> algorithm. It is a <strong>drop-in replacement</strong> for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code>.</p>
-<p>The reimplementation of the cpp library offers multi-language support (<a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html"><code>python</code></a>and <a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html"><code>julia</code></a>).</p>
+<p>R package that provides unconstrained nonlinear optimization through a modern <strong>C++17</strong> reimplementation of the classic Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> algorithm. It is a <strong>drop-in replacement</strong> for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code>.</p>
+<p>The reimplementation of the C++ library offers multi-language support: <a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html"><strong>Python</strong></a> and <a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html"><strong>Julia</strong></a> bindings are available. ## Features</p>
+<ul>
+<li>
+<strong>Drop-in replacement</strong> for the original <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> function.</li>
+<li>
+<strong>Modern C++17</strong> implementation, enabling easier extension and integration.</li>
+<li>
+<strong>Multi-language support</strong> – use the same algorithm in R, Python, and Julia.</li>
+<li>
+<strong>Efficient and robust</strong> – retains the numerical properties of the original Fortran code.</li>
+<li>
+<strong>Easy installation</strong> – no Fortran compiler required.</li>
+</ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>Install the latest development version from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install directly from GitHub</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"alrobles/ucminfcpp"</span><span class="op">)</span></span></code></pre></div>
@@ -116,20 +131,21 @@
 <li><p>You can consult this document <a href="http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf" class="external-link"><code>here</code></a>,</p></li>
 <li><p>The original Fortran source code is archived <a href="https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f" class="external-link"><code>here</code></a>.</p></li>
 </ul>
-<p>Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages. The structure of <code>ucminf</code> in R draws from the <a href="https://github.com/cran/FortranCallsR" class="external-link">FortranCallsR</a> package by Diethelm Wuertz.</p>
+<p>Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages. The structure of <code>ucminf</code> in R draws from the <a href="https://github.com/cran/FortranCallsR" class="external-link">FortranCallsR</a> package by Diethelm Wuertz. Dr. Wuertz passed away in 2016</p>
 </div>
 <div class="section level2">
 <h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
 </h2>
 <ul>
-<li><p>For detailed walkthroughs and performance benchmarks visit <a href="https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html"><code>ucminfcpp</code> documentation site</a></p></li>
-<li><p>For information about portability visit <a href="https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html">Portability from Fortran to C++</a></p></li>
-<li><p>For use in C++ visit <a href="https://alrobles.github.io/ucminfcpp/articles/cpp_use.html"><code>C++</code> documentation site</a></p></li>
-<li><p>For use in Python visit <a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html"><code>python</code> documentation site</a></p></li>
-<li><p>For use in Julia visit <a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html"><code>julia</code> documentation site</a></p></li>
+<li><p><a href="https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html">Detailed walkthroughs and performance benchmarks:</a></p></li>
+<li><p><a href="https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html">Portability from Fortran to C++:</a></p></li>
+<li><p><a href="https://alrobles.github.io/ucminfcpp/articles/cpp_use.html">Use with C++ :</a></p></li>
+<li><p><a href="https://alrobles.github.io/ucminfcpp/articles/python_manual.html">Use with <code>Python</code> :</a></p></li>
+<li><p><a href="https://alrobles.github.io/ucminfcpp/articles/julia_manual.html">Use with <code>Julia</code>:</a></p></li>
 </ul>
 </div>
 </div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -161,7 +177,14 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/alrobles/ucminfcpp/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/alrobles/ucminfcpp/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://CRAN.R-project.org/package=ucminfcpp" class="external-link"><img src="https://www.r-pkg.org/badges/version/ucminfcpp" alt="CRAN status"></a></li>
+<li><a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

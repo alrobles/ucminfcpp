@@ -40,10 +40,10 @@ g++ -std=c++17 -I path/to/ucminfcpp/src/include my_program.cpp -o my_program
 
 ## The Result Type
 
-The optimizer returns a `ucminf::Result` struct:
+The optimizer returns a `ucminfcpp::Result` struct:
 
 ```cpp
-namespace ucminf {
+namespace ucminfcpp {
   struct Result {
     std::vector<double> par;   // optimal point
     double              value; // f(par)
@@ -54,7 +54,7 @@ namespace ucminf {
 }
 ```
 
-## High-Level API: `ucminf::minimize()`
+## High-Level API: `ucminfcpp::minimize()`
 
 Use `minimize()` when the callable type is not known at compile time (for
 example, when it is stored in a `std::function`).
@@ -75,7 +75,7 @@ int main() {
         g[1] =  200.0 * b;
     };
 
-    ucminf::Result res = ucminf::minimize({-1.2, 1.0}, banana);
+    ucminfcpp::Result res = ucminfcpp::minimize({-1.2, 1.0}, banana);
 
     std::cout << "par  = (" << res.par[0] << ", " << res.par[1] << ")\n";
     std::cout << "f    = " << res.value << "\n";
@@ -84,7 +84,7 @@ int main() {
 }
 ```
 
-## Zero-Overhead API: `ucminf::minimize_direct<F>()`
+## Zero-Overhead API: `ucminfcpp::minimize_direct<F>()`
 
 When the callable type is known at compile time, use `minimize_direct` so
 that the compiler can inline the objective and gradient into the optimizer
@@ -104,7 +104,7 @@ void rosenbrock(const std::vector<double>& x,
 }
 
 int main() {
-    ucminf::Result res = ucminf::minimize_direct({-1.2, 1.0}, rosenbrock);
+    ucminfcpp::Result res = ucminfcpp::minimize_direct({-1.2, 1.0}, rosenbrock);
     // ...
     return 0;
 }
@@ -122,21 +122,21 @@ auto sphere = [](const std::vector<double>& x,
     }
 };
 
-ucminf::Result res = ucminf::minimize_direct(
+ucminfcpp::Result res = ucminfcpp::minimize_direct(
     std::vector<double>(10, 2.0), sphere);
 ```
 
 ## Adjusting Optimizer Settings
 
-Pass a `ucminf::Options` struct to either API to control convergence
+Pass a `ucminfcpp::Options` struct to either API to control convergence
 criteria and iteration limits:
 
 ```cpp
-ucminf::Options opts;
+ucminfcpp::Options opts;
 opts.maxeval = 2000;   // maximum function evaluations
 opts.eps     = 1e-10;  // gradient tolerance
 
-ucminf::Result res = ucminf::minimize({-1.2, 1.0}, banana, opts);
+ucminfcpp::Result res = ucminfcpp::minimize({-1.2, 1.0}, banana, opts);
 ```
 
 ## Building with CMake
@@ -168,12 +168,12 @@ replaces a numerical optimization dependency:
 #include <functional>
 
 // Generic fitting routine
-ucminf::Result fit_model(
+ucminfcpp::Result fit_model(
     std::vector<double> theta0,
     std::function<void(const std::vector<double>&,
                        std::vector<double>&, double&)> neg_log_lik)
 {
-    return ucminf::minimize(theta0, neg_log_lik);
+    return ucminfcpp::minimize(theta0, neg_log_lik);
 }
 ```
 

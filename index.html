@@ -65,168 +65,47 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="ucminfcpp">ucminfcpp<a class="anchor" aria-label="anchor" href="#ucminfcpp"></a>
 </h1></div>
-<!-- badges: start -->
-<!-- badges: end -->
-</div>
-<div class="section level1">
-<h1 id="ucminfcpp-1">ucminfcpp<a class="anchor" aria-label="anchor" href="#ucminfcpp-1"></a>
-</h1>
-<p>Unconstrained nonlinear optimization via <strong>modern C++17</strong> and Rcpp — a complete reimplementation of the original Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> R package with multi-language support.</p>
-<div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
-</h2>
-<p><strong>ucminfcpp</strong> provides the <code><a href="reference/ucminf.html">ucminf()</a></code> function for general-purpose unconstrained nonlinear optimization.<br>
-The algorithm is a quasi-Newton method with BFGS updating of the inverse Hessian and a soft line search with adaptive trust-region radius monitoring.</p>
-<p>It is designed as a <strong>drop-in replacement</strong> for the original <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> function.</p>
-<p>The original algorithm was written in Fortran by Hans Bruun Nielsen (IMM,<br>
-DTU, 2000) and described in:</p>
-<blockquote>
-<p>H.B. Nielsen,<br><em>“UCMINF — An Algorithm for Unconstrained, Nonlinear Optimization”</em>,<br>
-Report IMM-REP-2000-19, DTU, December 2000.</p>
-</blockquote>
-<p><strong>Complete Credit:</strong><br>
-This reimplementation is based on the original repository<br><a href="https://github.com/hdakpo/ucminf" class="external-link uri">https://github.com/hdakpo/ucminf</a>.<br>
-The implementation and techniques are derived from the original Fortran-based algorithm described by:</p>
-<ul>
-<li>Nielsen, H. B. (2000)<br><em>UCMINF - An Algorithm For Unconstrained, Nonlinear Optimization</em>,<br>
-Report IMM-REP-2000-19, Department of Mathematical Modelling,<br>
-Technical University of Denmark.<br><a href="http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf" class="external-link uri">http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf</a>
-</li>
-</ul>
-<p>The original Fortran source code is located at:<br><a href="http://www2.imm.dtu.dk/projects/hbn_software/ucminf.f" class="external-link uri">http://www2.imm.dtu.dk/projects/hbn_software/ucminf.f</a><br>
-(archived at<br><a href="https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f" class="external-link uri">https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f</a>).</p>
-<p>Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages. The structure in R draws from the <strong>FortranCallsR</strong> package by Diethelm Wuertz.</p>
-<div class="section level3">
-<h3 id="key-features">Key features<a class="anchor" aria-label="anchor" href="#key-features"></a>
-</h3>
-<table class="table">
-<colgroup>
-<col width="50%">
-<col width="50%">
-</colgroup>
-<thead><tr class="header">
-<th>Feature</th>
-<th>Description</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>Dual-layer C++ API</strong></td>
-<td>
-<code>minimize()</code> (high-level, <code>std::function</code>) and <code>minimize_direct&lt;F&gt;()</code> (zero-overhead template).</td>
-</tr>
-<tr class="even">
-<td><strong>R interface</strong></td>
-<td>Drop-in replacement for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> via Rcpp.</td>
-</tr>
-<tr class="odd">
-<td><strong>Python bindings</strong></td>
-<td>
-<code>pybind11</code>-based module in <code>python/</code>.</td>
-</tr>
-<tr class="even">
-<td><strong>Julia bindings</strong></td>
-<td>
-<code>CxxWrap</code>-based module in <code>julia/</code>.</td>
-</tr>
-<tr class="odd">
-<td><strong>C++ unit tests</strong></td>
-<td>Catch2 test suite.</td>
-</tr>
-<tr class="even">
-<td><strong>CMake build</strong></td>
-<td>Standalone C++ build for embedding.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><code>ucminfcpp</code> is an R package that provides unconstrained nonlinear optimization through a modern <strong>C++17</strong> reimplementation of the classic Fortran-based <a href="https://CRAN.R-project.org/package=ucminf" class="external-link">ucminf</a> algorithm. It is a <strong>drop-in replacement</strong> for <code><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf::ucminf()</a></code> and was primarily developed to power the <a href="https://github.com/alrobles/nicher" class="external-link"><code>@alrobles/nicher</code></a> and <a href="https://github.com/alrobles/xsdmMle" class="external-link"><code>@alrobles/xsdmMle</code></a> packages.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="r-package">R package<a class="anchor" aria-label="anchor" href="#r-package"></a>
-</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"alrobles/ucminfcpp"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="algorithm-details">Algorithm details<a class="anchor" aria-label="anchor" href="#algorithm-details"></a>
-</h2>
-<p>The UCMINF algorithm combines three techniques…</p>
+<code class="sourceCode R"><span><span class="co"># Install directly from GitHub</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"alrobles/ucminfcpp"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="c-api">C++ API<a class="anchor" aria-label="anchor" href="#c-api"></a>
+<h2 id="basic-example">Basic Example<a class="anchor" aria-label="anchor" href="#basic-example"></a>
 </h2>
-<p>Two entry points share the same optimized kernel.</p>
-<div class="section level3">
-<h3 id="high-level-api--ucminfminimize">High-level API — <code>ucminf::minimize()</code>
-<a class="anchor" aria-label="anchor" href="#high-level-api--ucminfminimize"></a>
-</h3>
-<p>Convenient when the callable type is not known at compile time.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="pp">#include </span><span class="im">"ucminf_core.hpp"</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>ucminf<span class="op">::</span>Result res <span class="op">=</span> ucminf<span class="op">::</span>minimize<span class="op">(</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="op">{</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">},</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> x<span class="op">,</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>       <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> g<span class="op">,</span> <span class="dt">double</span><span class="op">&amp;</span> f<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>        <span class="dt">double</span> a <span class="op">=</span> <span class="fl">1.0</span> <span class="op">-</span> x<span class="op">[</span><span class="dv">0</span><span class="op">],</span> b <span class="op">=</span> x<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> x<span class="op">[</span><span class="dv">0</span><span class="op">]*</span>x<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>        f    <span class="op">=</span> a<span class="op">*</span>a <span class="op">+</span> <span class="fl">100.0</span><span class="op">*</span>b<span class="op">*</span>b<span class="op">;</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>        g<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="fl">2.0</span><span class="op">*</span>a <span class="op">-</span> <span class="fl">400.0</span><span class="op">*</span>x<span class="op">[</span><span class="dv">0</span><span class="op">]*</span>b<span class="op">;</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>        g<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span>  <span class="fl">200.0</span><span class="op">*</span>b<span class="op">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="op">);</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="low-level-api--ucminfminimize_directf">Low-level API — <code>ucminf::minimize_direct&lt;F&gt;()</code>
-<a class="anchor" aria-label="anchor" href="#low-level-api--ucminfminimize_directf"></a>
-</h3>
-<p>Zero-overhead template API, inlinable by the compiler.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="dt">void</span> rosenbrock<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> x<span class="op">,</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> g<span class="op">,</span> <span class="dt">double</span><span class="op">&amp;</span> f<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>ucminf<span class="op">::</span>Result res <span class="op">=</span> ucminf<span class="op">::</span>minimize_direct<span class="op">({</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">},</span> rosenbrock<span class="op">);</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="kw">auto</span> fn <span class="op">=</span> <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> x<span class="op">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>             <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;&amp;</span> g<span class="op">,</span> <span class="dt">double</span><span class="op">&amp;</span> f<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>ucminf<span class="op">::</span>Result res2 <span class="op">=</span> ucminf<span class="op">::</span>minimize_direct<span class="op">({</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">},</span> fn<span class="op">);</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="r-usage-and-performance-notes">R usage and performance notes<a class="anchor" aria-label="anchor" href="#r-usage-and-performance-notes"></a>
-</h2>
-<p>When <code><a href="reference/ucminf.html">ucminfcpp::ucminf()</a></code> is called from R, every evaluation of <code>fn</code> and <code>gr</code> crosses the interpreter boundary:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hdakpo/ucminf" class="external-link">ucminf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/alrobles/ucminfcpp" class="external-link">ucminfcpp</a></span><span class="op">)</span></span>
+<p>The example below optimises <strong>Rosenbrock’s Banana Function</strong> and confirms that <code>ucminfcpp</code> and <code>ucminf</code> produce identical results.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Rosenbrock's Banana Function</span></span>
+<span><span class="va">banana</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">100</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
-<span><span class="va">gr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="op">-</span><span class="fl">400</span><span class="op">*</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">-</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>   <span class="fl">200</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">-</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="co"># Initial point</span></span>
+<span><span class="va">starting_point</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
-<span>  ucminf    <span class="op">=</span> <span class="fu">ucminf</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="va">fn</span>, <span class="va">gr</span><span class="op">)</span>,</span>
-<span>  ucminfcpp <span class="op">=</span> <span class="fu">ucminfcpp</span><span class="fu">::</span><span class="fu"><a href="reference/ucminf.html">ucminf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="va">fn</span>, <span class="va">gr</span><span class="op">)</span>,</span>
-<span>  times <span class="op">=</span> <span class="fl">200</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><strong>To minimize R callback overhead:</strong></p>
-<ul>
-<li>Pre-compute invariants outside <code>fn()</code> / <code>gr()</code>.</li>
-<li>Implement the objective in C++ and call via <code>minimize_direct&lt;F&gt;()</code>.</li>
-<li>Use <code><a href="https://rdrr.io/pkg/Rcpp/man/cppFunction.html" class="external-link">Rcpp::cppFunction</a></code> for compiled R code.</li>
-<li>For high-dimensional problems (n ≥ 20), optimized C++ kernels offer larger gains. ``</li>
-</ul>
+<span><span class="co"># Optimization with ucminfcpp</span></span>
+<span><span class="va">result_cpp</span> <span class="op">&lt;-</span> <span class="fu">ucminfcpp</span><span class="fu">::</span><span class="fu"><a href="reference/ucminf.html">ucminf</a></span><span class="op">(</span><span class="va">starting_point</span>, <span class="va">banana</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"ucminfcpp result:\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result_cpp</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Optimization with ucminf</span></span>
+<span><span class="va">result_fortran</span> <span class="op">&lt;-</span> <span class="fu">ucminf</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ucminf/man/ucminf.html" class="external-link">ucminf</a></span><span class="op">(</span><span class="va">starting_point</span>, <span class="va">banana</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"ucminf result:\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result_fortran</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check similarity</span></span>
+<span><span class="va">identical_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">result_cpp</span><span class="op">$</span><span class="va">par</span>, <span class="va">result_fortran</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Are the results the same? "</span>, <span class="va">identical_result</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
+</h2>
+<p>For detailed walkthroughs, performance benchmarks, and language-specific guides (C++, Python, Julia), visit the <a href="https://alrobles.github.io/ucminfcpp/"><code>ucminfcpp</code> documentation site</a>.</p>
 </div>
 </div>
-
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">

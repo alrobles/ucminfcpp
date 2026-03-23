@@ -34,9 +34,9 @@ When supplied, \code{fn} and \code{gr} are ignored.}
 
 \item{hessian}{Integer controlling Hessian output:
 \describe{
-\item{0}{No Hessian (default).}
-\item{2}{Returns the final inverse-Hessian approximation from BFGS.}
-\item{3}{Returns both the inverse Hessian (2) and its inverse (Hessian).}
+  \item{0}{No Hessian (default).}
+  \item{2}{Returns the final inverse-Hessian approximation from BFGS.}
+  \item{3}{Returns both the inverse Hessian (2) and its inverse (Hessian).}
 }}
 }
 \value{
@@ -44,30 +44,30 @@ A list of class \code{"ucminf"} with elements:
 \item{par}{Computed minimizer.}
 \item{value}{Objective value at the minimizer.}
 \item{convergence}{Termination code:
-\describe{
-\item{1}{Small gradient (\code{grtol}).}
-\item{2}{Small step (\code{xtol}).}
-\item{3}{Evaluation limit (\code{maxeval}).}
-\item{4}{Zero step from line search.}
-\item{-2}{n <= 0.}
-\item{-4}{stepmax <= 0.}
-\item{-5}{grtol or xtol <= 0.}
-\item{-6}{maxeval <= 0.}
-\item{-7}{Given inverse Hessian not positive definite.}
-}}
+  \describe{
+    \item{1}{Small gradient (\code{grtol}).}
+    \item{2}{Small step (\code{xtol}).}
+    \item{3}{Evaluation limit (\code{maxeval}).}
+    \item{4}{Zero step from line search.}
+    \item{-2}{n <= 0.}
+    \item{-4}{stepmax <= 0.}
+    \item{-5}{grtol or xtol <= 0.}
+    \item{-6}{maxeval <= 0.}
+    \item{-7}{Given inverse Hessian not positive definite.}
+  }}
 \item{message}{Human-readable termination message.}
 \item{invhessian.lt}{Lower triangle of the final inverse-Hessian
-approximation (packed).}
+  approximation (packed).}
 \item{invhessian}{Full inverse-Hessian matrix (when \code{hessian >= 2}).}
 \item{hessian}{Hessian matrix, inverse of \code{invhessian}
-(when \code{hessian == 3}).}
+  (when \code{hessian == 3}).}
 \item{info}{Named vector:
-\describe{
-\item{maxgradient}{\eqn{\|g(x)\|_\infty} at solution.}
-\item{laststep}{Length of the last step.}
-\item{stepmax}{Final trust-region radius.}
-\item{neval}{Number of function/gradient evaluations.}
-}}
+  \describe{
+    \item{maxgradient}{\eqn{\|g(x)\|_\infty} at solution.}
+    \item{laststep}{Length of the last step.}
+    \item{stepmax}{Final trust-region radius.}
+    \item{neval}{Number of function/gradient evaluations.}
+  }}
 }
 \description{
 An implementation of the UCMINF algorithm translated from Fortran to C and
@@ -78,33 +78,34 @@ radius monitoring.
 \details{
 This package is a two-phase migration of the original \pkg{ucminf} R package:
 \itemize{
-\item \strong{Phase 1}: The Fortran core is translated to C
-(\code{src/ucminf_core.c}).
-\item \strong{Phase 2}: The C core is wrapped with an Rcpp interface
-(\code{src/ucminf_rcpp.cpp}).
+  \item \strong{Phase 1}: The Fortran core is translated to C
+        (\code{src/ucminf_core.c}).
+  \item \strong{Phase 2}: The C core is wrapped with an Rcpp interface
+        (\code{src/ucminf_rcpp.cpp}).
 }
 
 The interface is designed to be interchangeable with the original
 \code{\link[ucminf:ucminf]{ucminf::ucminf}} and with
 \code{\link[stats]{optim}}.
 
+
 The \code{control} argument accepts:
 \describe{
-\item{\code{trace}}{If positive, print convergence info after optimization.
-Default \code{0}.}
-\item{\code{grtol}}{Stop when \eqn{\|g(x)\|_\infty \le} \code{grtol}.
-Default \code{1e-6}.}
-\item{\code{xtol}}{Stop when \eqn{\|x - x_{\rm prev}\|^2 \le}
-\code{xtol}*(\code{xtol} + \eqn{\|x\|^2}). Default \code{1e-12}.}
-\item{\code{stepmax}}{Initial trust-region radius. Default \code{1}.}
-\item{\code{maxeval}}{Maximum function evaluations. Default \code{500}.}
-\item{\code{grad}}{Finite-difference type when \code{gr = NULL}:
-\code{"forward"} (default) or \code{"central"}.}
-\item{\code{gradstep}}{Length-2 vector; step is
-\eqn{|x_i| \cdot \code{gradstep[1]} + \code{gradstep[2]}}.
-Default \code{c(1e-6, 1e-8)}.}
-\item{\code{invhessian.lt}}{A vector containing the lower triangle of the
-initial inverse Hessian (packed column-major). Default: identity.}
+  \item{\code{trace}}{If positive, print convergence info after optimization.
+    Default \code{0}.}
+  \item{\code{grtol}}{Stop when \eqn{\|g(x)\|_\infty \le} \code{grtol}.
+    Default \code{1e-6}.}
+  \item{\code{xtol}}{Stop when \eqn{\|x - x_{\rm prev}\|^2 \le}
+    \code{xtol}*(\code{xtol} + \eqn{\|x\|^2}). Default \code{1e-12}.}
+  \item{\code{stepmax}}{Initial trust-region radius. Default \code{1}.}
+  \item{\code{maxeval}}{Maximum function evaluations. Default \code{500}.}
+  \item{\code{grad}}{Finite-difference type when \code{gr = NULL}:
+    \code{"forward"} (default) or \code{"central"}.}
+  \item{\code{gradstep}}{Length-2 vector; step is
+    \eqn{|x_i| \cdot \code{gradstep[1]} + \code{gradstep[2]}}.
+    Default \code{c(1e-6, 1e-8)}.}
+  \item{\code{invhessian.lt}}{A vector containing the lower triangle of the
+    initial inverse Hessian (packed column-major). Default: identity.}
 }
 }
 \examples{

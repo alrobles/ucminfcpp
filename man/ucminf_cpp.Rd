@@ -21,8 +21,8 @@ ucminf_cpp(par, fn, gr, has_gr, control)
 }
 \value{
 A list with elements \code{par}, \code{value}, \code{convergence},
-\code{neval}, \code{maxgradient}, \code{laststep}, \code{stepmax},
-and \code{invhessian_lt}.
+  \code{neval}, \code{maxgradient}, \code{laststep}, \code{stepmax},
+  and \code{invhessian_lt}.
 }
 \description{
 Internal function called by \code{\link{ucminf}}. Use that instead.

@@ -1,33 +1,42 @@
 Package: ucminfcpp
-Title: Unconstrained Nonlinear Optimization via Modern C++ and Rcpp
-Version: 0.3.0
+Type: Package
+Title: C++ Reimplementation of the 'ucminf' Unconstrained Nonlinear Optimizer
+Version: 0.1.0
 Authors@R: c(
-    person("Hans Bruun", "Nielsen", role = "aut",
-           comment = "Original Fortran algorithm"),
-    person("Stig Bousgaard", "Mortensen", role = "aut",
-           comment = "Original R/Fortran/C implementation"),
-    person("Angel Robles", "Maintainer", role = c("aut", "cre"),
-    email = "a.l.robles.fernandez@gmail.com"),
-    person("K Hervé", "Dakpo", email = "k-herve.dakpo@inrae.fr", 
-    role = c("ctb"))
+    person("Angel Luis", "Robles Fernández", 
+           role = c("aut", "cre"),
+           email = "a.l.robles.fernandez@gmail.com"),
+    person("Hans Bruun", "Nielsen",
+           role = "cph",
+           comment = "Original UCMINF algorithm (Fortran)"),
+    person("Rex", "Brown",
+           role = "ctb",
+           comment = "Contributor to original R package ucminf")
     )
-Description: A modern C++17 reimplementation of the UCMINF unconstrained
-    nonlinear optimization algorithm. The core algorithm uses RAII,
-    STL containers (std::vector), and std::function for a clean,
-    pointer-free API. An Rcpp interface exposes the optimizer to R,
-    while pybind11 and CxxWrap bindings enable use from Python and Julia.
-    The algorithm is of quasi-Newton type with BFGS updating of the inverse
-    Hessian and a soft line search with trust-region radius monitoring.
+Description: 
+    A modern C++17 reimplementation of the UCMINF algorithm for 
+    unconstrained nonlinear optimization (Nielsen 2000), offering full 
+    API compatibility with the original 'ucminf' R package but developed 
+    independently. The optimizer core has been rewritten in C with a 
+    modern header-only C++17 interface, zero-allocation line search, and 
+    an Rcpp interface. The goal is numerical equivalence with improved 
+    performance, reproducibility, and extensibility. Includes extensive 
+    test coverage, performance regression tests, and compatibility checks 
+    against 'ucminf'. This package is not affiliated with the original 
+    maintainers but acknowledges their authorship of the algorithm and the 
+    original R interface.
 License: GPL (>= 2)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
-Imports:
-    Rcpp (>= 1.0.0)
-LinkingTo:
+Depends: R (>= 3.5.0)
+Imports: 
+    Rcpp
+LinkingTo: 
     Rcpp
 Suggests:
     testthat (>= 3.0.0),
     ucminf,
     microbenchmark
 Config/testthat/edition: 3
+URL: https://github.com/alrobles/ucminfcpp
+BugReports: https://github.com/alrobles/ucminfcpp/issues
+RoxygenNote: 7.3.3

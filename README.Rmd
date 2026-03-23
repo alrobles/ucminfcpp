@@ -1,8 +1,9 @@
-ucminfcpp
-================
+---
+title: "ucminfcpp"
+output: github_document
+---
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 # ucminfcpp
@@ -17,14 +18,12 @@ multi-language support.
 **ucminfcpp** provides the `ucminf()` function for general-purpose
 unconstrained nonlinear optimization.  
 The algorithm is a quasi-Newton method with BFGS updating of the inverse
-Hessian and a soft line search with adaptive trust-region radius
-monitoring.
+Hessian and a soft line search with adaptive trust-region radius monitoring.
 
 It is designed as a **drop-in replacement** for the original
 `ucminf::ucminf()` function.
 
-The original algorithm was written in Fortran by Hans Bruun Nielsen
-(IMM,  
+The original algorithm was written in Fortran by Hans Bruun Nielsen (IMM,  
 DTU, 2000) and described in:
 
 > H.B. Nielsen,  
@@ -33,29 +32,27 @@ DTU, 2000) and described in:
 
 **Complete Credit:**  
 This reimplementation is based on the original repository  
-<https://github.com/hdakpo/ucminf>.  
-The implementation and techniques are derived from the original
-Fortran-based algorithm described by:
+https://github.com/hdakpo/ucminf.  
+The implementation and techniques are derived from the original Fortran-based algorithm described by:
 
 - Nielsen, H. B. (2000)  
   *UCMINF - An Algorithm For Unconstrained, Nonlinear Optimization*,  
   Report IMM-REP-2000-19, Department of Mathematical Modelling,  
   Technical University of Denmark.  
-  <http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf>
+  http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf
 
 The original Fortran source code is located at:  
-<http://www2.imm.dtu.dk/projects/hbn_software/ucminf.f>  
+http://www2.imm.dtu.dk/projects/hbn_software/ucminf.f  
 (archived at  
-<https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f>).
+https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f).
 
-Dr. Nielsen passed away in 2015; the code was later modified for
-integration with R packages. The structure in R draws from the
-**FortranCallsR** package by Diethelm Wuertz.
+Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages.
+The structure in R draws from the **FortranCallsR** package by Diethelm Wuertz.
 
 ### Key features
 
 | Feature | Description |
-|----|----|
+|--------|-------------|
 | **Dual-layer C++ API** | `minimize()` (high-level, `std::function`) and `minimize_direct<F>()` (zero-overhead template). |
 | **R interface** | Drop-in replacement for `ucminf::ucminf()` via Rcpp. |
 | **Python bindings** | `pybind11`-based module in `python/`. |
@@ -67,14 +64,14 @@ integration with R packages. The structure in R draws from the
 
 ### R package
 
-``` r
+```r
 # install.packages("remotes")
 remotes::install_github("alrobles/ucminfcpp")
 ```
 
 ## Algorithm details
 
-The UCMINF algorithm combines three techniques…
+The UCMINF algorithm combines three techniques...
 
 ## C++ API
 
@@ -84,7 +81,7 @@ Two entry points share the same optimized kernel.
 
 Convenient when the callable type is not known at compile time.
 
-``` cpp
+```cpp
 #include "ucminf_core.hpp"
 
 ucminf::Result res = ucminf::minimize(
@@ -103,7 +100,7 @@ ucminf::Result res = ucminf::minimize(
 
 Zero-overhead template API, inlinable by the compiler.
 
-``` cpp
+```cpp
 void rosenbrock(const std::vector<double>& x,
                 std::vector<double>& g, double& f) {
     /* ... */
@@ -120,10 +117,10 @@ ucminf::Result res2 = ucminf::minimize_direct({2.0, 0.5}, fn);
 
 ## R usage and performance notes
 
-When `ucminfcpp::ucminf()` is called from R, every evaluation of `fn`
-and `gr` crosses the interpreter boundary:
+When `ucminfcpp::ucminf()` is called from R, every evaluation of `fn` and `gr`
+crosses the interpreter boundary:
 
-``` r
+```r
 library(microbenchmark)
 library(ucminf)
 library(ucminfcpp)
@@ -146,5 +143,5 @@ microbenchmark(
 - Pre-compute invariants outside `fn()` / `gr()`.
 - Implement the objective in C++ and call via `minimize_direct<F>()`.
 - Use `Rcpp::cppFunction` for compiled R code.
-- For high-dimensional problems (n ≥ 20), optimized C++ kernels offer
-  larger gains. \`\`
+- For high-dimensional problems (n ≥ 20), optimized C++ kernels offer larger gains.
+``

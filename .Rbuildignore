@@ -6,3 +6,4 @@
 ^python$
 ^tests/cpp$
 ^src/ucminf_core.hpp$
+^README\.Rmd$

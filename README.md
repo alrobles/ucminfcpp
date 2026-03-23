@@ -8,10 +8,11 @@
 `ucminfcpp` is an R package that provides unconstrained nonlinear
 optimization through a modern **C++17** reimplementation of the classic
 Fortran-based [ucminf](https://CRAN.R-project.org/package=ucminf)
-algorithm. It is a **drop-in replacement** for `ucminf::ucminf()` and
-was primarily developed to power the
-[`@alrobles/nicher`](https://github.com/alrobles/nicher) and
-[`@alrobles/xsdmMle`](https://github.com/alrobles/xsdmMle) packages.
+algorithm. It is a **drop-in replacement** for `ucminf::ucminf()`.
+
+The reimplementation of the cpp library offers multi-language support
+([`python`](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)and
+[`julia`](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)).
 
 ## Installation
 
@@ -49,8 +50,54 @@ identical_result <- all.equal(result_cpp$par, result_fortran$par)
 cat("Are the results the same? ", identical_result, "\n")
 ```
 
+## Overview
+
+`ucminfcpp` provides the `ucminf()` function for general-purpose
+unconstrained nonlinear optimization. The algorithm is a quasi-Newton
+method with BFGS updating of the inverse Hessian and a soft line search
+with adaptive trust-region radius monitoring.
+
+It is designed as a drop-in replacement for the original Fortran-based
+[ucminf](https://CRAN.R-project.org/package=ucminf) `ucminf::ucminf()`
+function. The original algorithm was written in Fortran by Hans Bruun
+Nielsen.
+
+## Complete Credit
+
+This reimplementation is based on the original repository
+[ucminf](https://github.com/hdakpo/ucminf).
+
+The implementation and techniques are derived from the original
+Fortran-based algorithm described by: Nielsen, H. B. (2000) UCMINF - An
+Algorithm For Unconstrained, Nonlinear Optimization, Report
+IMM-REP-2000-19, Department of Mathematical Modelling, Technical
+University of Denmark.
+
+- You can consult this document
+  [`here`](http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf),
+
+- The original Fortran source code is archived
+  [`here`](https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f).
+
+Dr. Nielsen passed away in 2015; the code was later modified for
+integration with R packages. The structure of `ucminf` in R draws from
+the [FortranCallsR](https://github.com/cran/FortranCallsR) package by
+Diethelm Wuertz.
+
 ## Further Reading
 
-For detailed walkthroughs, performance benchmarks, and language-specific
-guides (C++, Python, Julia), visit the [`ucminfcpp` documentation
-site](https://alrobles.github.io/ucminfcpp/).
+- For detailed walkthroughs and performance benchmarks visit
+  [`ucminfcpp` documentation
+  site](https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html)
+
+- For information about portability visit [Portability from Fortran to
+  C++](https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html)
+
+- For use in C++ visit [`C++` documentation
+  site](https://alrobles.github.io/ucminfcpp/articles/cpp_use.html)
+
+- For use in Python visit [`python` documentation
+  site](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
+
+- For use in Julia visit [`julia` documentation
+  site](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)

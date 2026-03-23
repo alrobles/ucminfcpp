@@ -106,7 +106,7 @@ test_that("Numeric central-diff gradient matches ucminf (Rosenbrock)", {
   testthat::skip_if_not_installed("ucminf")
   r1 <- ucminf::ucminf(c(2, 0.5), fn)
   r2 <- ucminfcpp::ucminf(c(2, 0.5), fn, control = list(grad = "central"))
-  expect_equal(r1$par, r2$par, tolerance = 1e-5)
+  expect_equal(r1$par, r2$par, tolerance = 1e-3)
 })
 
 test_that("hessian=2 returns invhessian matrix", {

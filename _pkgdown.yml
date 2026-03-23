@@ -2,3 +2,19 @@ url: https://alrobles.github.io/ucminfcpp/
 template:
   bootstrap: 5
 
+articles:
+  - title: "Getting Started"
+    navbar: "Getting Started"
+    contents:
+      - introduccion
+  - title: "Deep Dives"
+    navbar: "Articles"
+    contents:
+      - ucminf_features
+      - portability_from_fortran
+  - title: "Language Guides"
+    navbar: "Language Guides"
+    contents:
+      - cpp_use
+      - python_manual
+      - julia_manual

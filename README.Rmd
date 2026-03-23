@@ -1,5 +1,4 @@
 ---
-title: "ucminfcpp"
 output: github_document
 ---
 
@@ -8,140 +7,52 @@ output: github_document
 
 # ucminfcpp
 
-Unconstrained nonlinear optimization via **modern C++17** and Rcpp — a
-complete reimplementation of the original Fortran-based
-[ucminf](https://CRAN.R-project.org/package=ucminf) R package with
-multi-language support.
-
-## Overview
-
-**ucminfcpp** provides the `ucminf()` function for general-purpose
-unconstrained nonlinear optimization.  
-The algorithm is a quasi-Newton method with BFGS updating of the inverse
-Hessian and a soft line search with adaptive trust-region radius monitoring.
-
-It is designed as a **drop-in replacement** for the original
-`ucminf::ucminf()` function.
-
-The original algorithm was written in Fortran by Hans Bruun Nielsen (IMM,  
-DTU, 2000) and described in:
-
-> H.B. Nielsen,  
-> *“UCMINF — An Algorithm for Unconstrained, Nonlinear Optimization”*,  
-> Report IMM-REP-2000-19, DTU, December 2000.
-
-**Complete Credit:**  
-This reimplementation is based on the original repository  
-https://github.com/hdakpo/ucminf.  
-The implementation and techniques are derived from the original Fortran-based algorithm described by:
-
-- Nielsen, H. B. (2000)  
-  *UCMINF - An Algorithm For Unconstrained, Nonlinear Optimization*,  
-  Report IMM-REP-2000-19, Department of Mathematical Modelling,  
-  Technical University of Denmark.  
-  http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf
-
-The original Fortran source code is located at:  
-http://www2.imm.dtu.dk/projects/hbn_software/ucminf.f  
-(archived at  
-https://web.archive.org/web/20050418082240/http://www.imm.dtu.dk/~hbn/Software/ucminf.f).
-
-Dr. Nielsen passed away in 2015; the code was later modified for integration with R packages.
-The structure in R draws from the **FortranCallsR** package by Diethelm Wuertz.
-
-### Key features
-
-| Feature | Description |
-|--------|-------------|
-| **Dual-layer C++ API** | `minimize()` (high-level, `std::function`) and `minimize_direct<F>()` (zero-overhead template). |
-| **R interface** | Drop-in replacement for `ucminf::ucminf()` via Rcpp. |
-| **Python bindings** | `pybind11`-based module in `python/`. |
-| **Julia bindings** | `CxxWrap`-based module in `julia/`. |
-| **C++ unit tests** | Catch2 test suite. |
-| **CMake build** | Standalone C++ build for embedding. |
+`ucminfcpp` is an R package that provides unconstrained nonlinear
+optimization through a modern **C++17** reimplementation of the classic
+Fortran-based [ucminf](https://CRAN.R-project.org/package=ucminf)
+algorithm. It is a **drop-in replacement** for `ucminf::ucminf()` and was
+primarily developed to power the
+[`@alrobles/nicher`](https://github.com/alrobles/nicher) and
+[`@alrobles/xsdmMle`](https://github.com/alrobles/xsdmMle) packages.
 
 ## Installation
 
-### R package
+```r
+# Install directly from GitHub
+devtools::install_github("alrobles/ucminfcpp")
+```
+
+## Basic Example
+
+The example below optimises **Rosenbrock's Banana Function** and confirms
+that `ucminfcpp` and `ucminf` produce identical results.
 
 ```r
-# install.packages("remotes")
-remotes::install_github("alrobles/ucminfcpp")
-```
-
-## Algorithm details
-
-The UCMINF algorithm combines three techniques...
-
-## C++ API
-
-Two entry points share the same optimized kernel.
-
-### High-level API — `ucminf::minimize()`
-
-Convenient when the callable type is not known at compile time.
-
-```cpp
-#include "ucminf_core.hpp"
-
-ucminf::Result res = ucminf::minimize(
-    {2.0, 0.5},
-    [](const std::vector<double>& x,
-       std::vector<double>& g, double& f) {
-        double a = 1.0 - x[0], b = x[1] - x[0]*x[0];
-        f    = a*a + 100.0*b*b;
-        g[0] = -2.0*a - 400.0*x[0]*b;
-        g[1] =  200.0*b;
-    }
-);
-```
-
-### Low-level API — `ucminf::minimize_direct<F>()`
-
-Zero-overhead template API, inlinable by the compiler.
-
-```cpp
-void rosenbrock(const std::vector<double>& x,
-                std::vector<double>& g, double& f) {
-    /* ... */
+# Rosenbrock's Banana Function
+banana <- function(x) {
+  100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
 }
 
-ucminf::Result res = ucminf::minimize_direct({2.0, 0.5}, rosenbrock);
+# Initial point
+starting_point <- c(-1.2, 1)
 
-auto fn = [](const std::vector<double>& x,
-             std::vector<double>& g, double& f) {
-    /* ... */
-};
-ucminf::Result res2 = ucminf::minimize_direct({2.0, 0.5}, fn);
+# Optimization with ucminfcpp
+result_cpp <- ucminfcpp::ucminf(starting_point, banana)
+cat("ucminfcpp result:\n")
+print(result_cpp$par)
+
+# Optimization with ucminf
+result_fortran <- ucminf::ucminf(starting_point, banana)
+cat("ucminf result:\n")
+print(result_fortran$par)
+
+# Check similarity
+identical_result <- all.equal(result_cpp$par, result_fortran$par)
+cat("Are the results the same? ", identical_result, "\n")
 ```
 
-## R usage and performance notes
+## Further Reading
 
-When `ucminfcpp::ucminf()` is called from R, every evaluation of `fn` and `gr`
-crosses the interpreter boundary:
-
-```r
-library(microbenchmark)
-library(ucminf)
-library(ucminfcpp)
-
-fn <- function(x) (1 - x[1])^2 + 100*(x[2] - x[1]^2)^2
-gr <- function(x) c(
-  -400*x[1]*(x[2]-x[1]^2) - 2*(1-x[1]),
-   200*(x[2]-x[1]^2)
-)
-
-microbenchmark(
-  ucminf    = ucminf::ucminf(c(2, 0.5), fn, gr),
-  ucminfcpp = ucminfcpp::ucminf(c(2, 0.5), fn, gr),
-  times = 200
-)
-```
-
-**To minimize R callback overhead:**
-
-- Pre-compute invariants outside `fn()` / `gr()`.
-- Implement the objective in C++ and call via `minimize_direct<F>()`.
-- Use `Rcpp::cppFunction` for compiled R code.
-- For high-dimensional problems (n ≥ 20), optimized C++ kernels offer larger gains.
-``
+For detailed walkthroughs, performance benchmarks, and language-specific
+guides (C++, Python, Julia), visit the
+[`ucminfcpp` documentation site](https://alrobles.github.io/ucminfcpp/).

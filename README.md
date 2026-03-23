@@ -1,20 +1,38 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/alrobles/ucminfcpp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alrobles/ucminfcpp/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ucminfcpp)](https://CRAN.R-project.org/package=ucminfcpp)
+[![License: GPL
+v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-# ucminfcpp
+# `ucminfcpp`
 
-`ucminfcpp` is an R package that provides unconstrained nonlinear
-optimization through a modern **C++17** reimplementation of the classic
-Fortran-based [ucminf](https://CRAN.R-project.org/package=ucminf)
-algorithm. It is a **drop-in replacement** for `ucminf::ucminf()`.
+R package that provides unconstrained nonlinear optimization through a
+modern **C++17** reimplementation of the classic Fortran-based
+[ucminf](https://CRAN.R-project.org/package=ucminf) algorithm. It is a
+**drop-in replacement** for `ucminf::ucminf()`.
 
-The reimplementation of the cpp library offers multi-language support
-([`python`](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)and
-[`julia`](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)).
+The reimplementation of the C++ library offers multi-language support:
+[**Python**](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
+and
+[**Julia**](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)
+bindings are available. \## Features
+
+- **Drop-in replacement** for the original `ucminf::ucminf()` function.
+- **Modern C++17** implementation, enabling easier extension and
+  integration.
+- **Multi-language support** – use the same algorithm in R, Python, and
+  Julia.
+- **Efficient and robust** – retains the numerical properties of the
+  original Fortran code.
+- **Easy installation** – no Fortran compiler required.
 
 ## Installation
+
+Install the latest development version from GitHub:
 
 ``` r
 # Install directly from GitHub
@@ -82,22 +100,21 @@ University of Denmark.
 Dr. Nielsen passed away in 2015; the code was later modified for
 integration with R packages. The structure of `ucminf` in R draws from
 the [FortranCallsR](https://github.com/cran/FortranCallsR) package by
-Diethelm Wuertz.
+Diethelm Wuertz. Dr. Wuertz passed away in 2016
 
 ## Further Reading
 
-- For detailed walkthroughs and performance benchmarks visit
-  [`ucminfcpp` documentation
-  site](https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html)
+- [Detailed walkthroughs and performance
+  benchmarks:](https://alrobles.github.io/ucminfcpp/articles/ucminf_features.html)
 
-- For information about portability visit [Portability from Fortran to
-  C++](https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html)
+- [Portability from Fortran to
+  C++:](https://alrobles.github.io/ucminfcpp/articles/portability_from_fortran.html)
 
-- For use in C++ visit [`C++` documentation
-  site](https://alrobles.github.io/ucminfcpp/articles/cpp_use.html)
+- [Use with C++
+  :](https://alrobles.github.io/ucminfcpp/articles/cpp_use.html)
 
-- For use in Python visit [`python` documentation
-  site](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
+- [Use with `Python`
+  :](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
 
-- For use in Julia visit [`julia` documentation
-  site](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)
+- [Use with
+  `Julia`:](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)

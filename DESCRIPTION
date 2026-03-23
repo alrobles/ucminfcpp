@@ -25,7 +25,7 @@ Description:
     against 'ucminf'. This package is not affiliated with the original 
     maintainers but acknowledges their authorship of the algorithm and the 
     original R interface.
-License: GPL (>= 2)
+License: GPL (>= 3)
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
 Imports: 

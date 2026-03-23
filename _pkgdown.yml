@@ -1,6 +1,48 @@
 url: https://alrobles.github.io/ucminfcpp/
 template:
   bootstrap: 5
+  bootstrap-version: 5
+
+navbar:
+  structure:
+    left:  [home, intro, reference, articles, news]
+    right: [github]
+  components:
+    home: ~
+    intro:
+      text: "Get started"
+      href: articles/introduccion.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    articles:
+      text: "Articles"
+      menu:
+        - text: "Features and Benchmarks"
+          href: articles/ucminf_features.html
+        - text: "Portability from Fortran to C++"
+          href: articles/portability_from_fortran.html
+        - text: "Language Guides"
+        - text: "  - C++ usage"
+          href: articles/cpp_use.html
+        - text: "  - Python manual"
+          href: articles/python_manual.html
+        - text: "  - Julia manual"
+          href: articles/julia_manual.html
+    news:
+      text: "News"
+      href: news/index.html
+    github:
+      icon: "fab fa-github"
+      href: https://github.com/alrobles/ucminfcpp
+
+reference:
+  - title: "Main function"
+    contents:
+      - ucminf
+  - title: "Auxiliary utilities"
+    contents:
+      - starts_with("ucminf.")
 
 articles:
   - title: "Getting Started"
@@ -8,7 +50,7 @@ articles:
     contents:
       - introduccion
   - title: "Deep Dives"
-    navbar: "Articles"
+    navbar: "Deep Dives"
     contents:
       - ucminf_features
       - portability_from_fortran
@@ -18,3 +60,18 @@ articles:
       - cpp_use
       - python_manual
       - julia_manual
+
+footer:
+  left:
+    text: "&copy; 2025-2026 Alejandro Robles"
+  right:
+    text: |
+      Built with [pkgdown](https://pkgdown.r-lib.org/) &
+      [Bootstrap](https://getbootstrap.com/).
+
+development:
+  mode: auto
+  version_label: default
+
+search:
+  across: all

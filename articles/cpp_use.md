@@ -1,0 +1,165 @@
+# Using ucminfcpp from C++
+
+## Overview
+
+The C++ core of `ucminfcpp` is a **header-only** library that can be
+embedded directly into any C++17 project without R or Rcpp. This article
+shows C++ developers how to integrate and use the optimizer.
+
+## Getting the Headers
+
+After installing the R package, the headers are available under
+`inst/include/` in the package source tree. You can also copy them
+directly from the GitHub repository:
+
+    src/include/ucminf_core.hpp
+    src/include/ucminf_core_impl.hpp
+
+Add the directory containing these headers to your compiler’s include
+path, e.g.:
+
+``` bash
+g++ -std=c++17 -I path/to/ucminfcpp/src/include my_program.cpp -o my_program
+```
+
+## The Result Type
+
+The optimizer returns a `ucminfcpp::Result` struct:
+
+``` cpp
+namespace ucminfcpp {
+  struct Result {
+    std::vector<double> par;   // optimal point
+    double              value; // f(par)
+    int                 convergence; // 1 = gradient small, 2 = step small,
+                                     // 3 = max evals, negative = error
+    int                 neval; // number of function evaluations
+  };
+}
+```
+
+## High-Level API: `ucminfcpp::minimize()`
+
+Use `minimize()` when the callable type is not known at compile time
+(for example, when it is stored in a `std::function`).
+
+``` cpp
+#include "ucminf_core.hpp"
+#include <iostream>
+
+int main() {
+    // Rosenbrock's Banana Function
+    auto banana = [](const std::vector<double>& x,
+                     std::vector<double>& g,
+                     double& f) {
+        double a = 1.0 - x[0];
+        double b = x[1] - x[0] * x[0];
+        f    =  a * a + 100.0 * b * b;
+        g[0] = -2.0 * a - 400.0 * x[0] * b;
+        g[1] =  200.0 * b;
+    };
+
+    ucminfcpp::Result res = ucminfcpp::minimize({-1.2, 1.0}, banana);
+
+    std::cout << "par  = (" << res.par[0] << ", " << res.par[1] << ")\n";
+    std::cout << "f    = " << res.value << "\n";
+    std::cout << "conv = " << res.convergence << "\n";
+    return 0;
+}
+```
+
+## Zero-Overhead API: `ucminfcpp::minimize_direct<F>()`
+
+When the callable type is known at compile time, use `minimize_direct`
+so that the compiler can inline the objective and gradient into the
+optimizer loop.
+
+``` cpp
+#include "ucminf_core.hpp"
+
+// Free function
+void rosenbrock(const std::vector<double>& x,
+                std::vector<double>& g, double& f) {
+    double a = 1.0 - x[0];
+    double b = x[1] - x[0] * x[0];
+    f    =  a * a + 100.0 * b * b;
+    g[0] = -2.0 * a - 400.0 * x[0] * b;
+    g[1] =  200.0 * b;
+}
+
+int main() {
+    ucminfcpp::Result res = ucminfcpp::minimize_direct({-1.2, 1.0}, rosenbrock);
+    // ...
+    return 0;
+}
+```
+
+This also works with lambdas and stateless function objects:
+
+``` cpp
+auto sphere = [](const std::vector<double>& x,
+                 std::vector<double>& g, double& f) {
+    f = 0.0;
+    for (std::size_t i = 0; i < x.size(); ++i) {
+        f    += x[i] * x[i];
+        g[i]  = 2.0 * x[i];
+    }
+};
+
+ucminfcpp::Result res = ucminfcpp::minimize_direct(
+    std::vector<double>(10, 2.0), sphere);
+```
+
+## Adjusting Optimizer Settings
+
+Pass a `ucminfcpp::Options` struct to either API to control convergence
+criteria and iteration limits:
+
+``` cpp
+ucminfcpp::Options opts;
+opts.maxeval = 2000;   // maximum function evaluations
+opts.eps     = 1e-10;  // gradient tolerance
+
+ucminfcpp::Result res = ucminfcpp::minimize({-1.2, 1.0}, banana, opts);
+```
+
+## Building with CMake
+
+The repository ships a `CMakeLists.txt` that builds the C++ tests and
+optional Python/Julia bindings. To build only the core tests:
+
+``` bash
+cmake -S . -B build -DBUILD_TESTS=ON -DBUILD_PYTHON=OFF -DBUILD_JULIA=OFF
+cmake --build build
+ctest --test-dir build
+```
+
+To embed `ucminfcpp` in your own CMake project, add the `src/include`
+directory as an interface include:
+
+``` cmake
+target_include_directories(my_target PRIVATE path/to/ucminfcpp/src/include)
+```
+
+## Example: Integrating into an Existing Optimizer
+
+The following pattern is common in scientific computing where
+`ucminfcpp` replaces a numerical optimization dependency:
+
+``` cpp
+#include "ucminf_core.hpp"
+#include <vector>
+#include <functional>
+
+// Generic fitting routine
+ucminfcpp::Result fit_model(
+    std::vector<double> theta0,
+    std::function<void(const std::vector<double>&,
+                       std::vector<double>&, double&)> neg_log_lik)
+{
+    return ucminfcpp::minimize(theta0, neg_log_lik);
+}
+```
+
+This keeps the optimizer decoupled from the specific model, making the
+code easy to test and extend.

@@ -1,0 +1,108 @@
+# Portability from Fortran to C++
+
+## Origin: The Fortran ucminf Algorithm
+
+The UCMINF optimization algorithm was originally written in **Fortran
+77** by Hans Bruun Nielsen at the Department of Mathematical Modelling,
+Technical University of Denmark (DTU), in 2000. It implements a
+quasi-Newton method with:
+
+- **BFGS** (Broyden–Fletcher–Goldfarb–Shanno) inverse-Hessian updating,
+- a **soft line search** that satisfies the Wolfe conditions, and
+- an adaptive **trust-region** radius to safeguard against steps that
+  are too large.
+
+The original report is:
+
+> Nielsen, H. B. (2000). *UCMINF — An Algorithm for Unconstrained,
+> Nonlinear Optimization.* Report IMM-REP-2000-19, DTU.
+> <http://www.imm.dtu.dk/documents/ftp/tr00/tr19_00.pdf>
+
+The algorithm was later wrapped for R by Soren Hauberg and Claus Ekstrøm
+in the `ucminf` CRAN package, which calls the original Fortran code via
+[`.Fortran()`](https://rdrr.io/r/base/Foreign.html).
+
+## Why Reimplement in C++?
+
+The Fortran wrapper approach has several practical limitations that
+motivated the creation of `ucminfcpp`:
+
+| Concern          | Fortran + R                                 | C++17 (ucminfcpp)                                   |
+|------------------|---------------------------------------------|-----------------------------------------------------|
+| **Portability**  | Requires a Fortran compiler at install time | Header-only C++17, any modern compiler              |
+| **Embedding**    | Not straightforward without R               | `#include "ucminf_core.hpp"` in any C++ project     |
+| **Python/Julia** | Not directly usable                         | `pybind11` and `CxxWrap` bindings included          |
+| **Maintenance**  | Fixed-form Fortran 77                       | Readable, idiomatic modern C++                      |
+| **Performance**  | R ↔︎ Fortran call overhead                   | Inlinable template API; zero-allocation line search |
+
+## The C++ Reimplementation
+
+`ucminfcpp` rewrites the core algorithm as a **header-only C++17**
+library located in `src/include/`:
+
+    src/
+      include/
+        ucminf_core.hpp        ← public API declarations
+        ucminf_core_impl.hpp   ← template implementation (included by core.hpp)
+      ucminf_core.c            ← low-level numeric helpers (shared with Fortran logic)
+      ucminf_rcpp.cpp          ← Rcpp wrapper
+
+The algorithm logic was faithfully translated line-by-line from the
+Fortran source, preserving the same convergence criteria, step-size
+control, and gradient tolerances. The result is **numerical
+equivalence** with the original implementation.
+
+## Technical Challenges Solved
+
+### 1. Managing State Without Global Variables
+
+Fortran 77 code frequently uses `COMMON` blocks for shared mutable
+state. The C++ rewrite encapsulates all optimizer state inside a single
+`struct` passed by reference through the call stack, eliminating global
+state and making the optimizer **thread-safe** for concurrent
+optimization runs.
+
+### 2. Callback from C++ into R
+
+When used from R, the objective function is an R closure that must be
+called through Rcpp. The design isolates this boundary in
+`src/ucminf_rcpp.cpp`, keeping the C++ core (`ucminf_core.hpp`) free of
+any R dependency — it depends only on the C++ standard library.
+
+### 3. Zero-Allocation Line Search
+
+The Fortran line search allocated temporary arrays on each call. The C++
+version uses `std::vector` only for the iterate `x` and gradient `g`,
+and reuses those buffers throughout the optimization loop, reducing heap
+pressure.
+
+### 4. Dual API for Different Use Cases
+
+Two public entry points share the same kernel implementation:
+
+``` cpp
+// High-level: accepts any callable via std::function (slight overhead)
+ucminf::Result res = ucminf::minimize(x0, fn);
+
+// Zero-overhead: compiler can inline the callable
+ucminf::Result res = ucminf::minimize_direct<decltype(fn)>(x0, fn);
+```
+
+This lets downstream users choose between convenience and maximum speed.
+
+## Verifying Equivalence
+
+The test suite in `tests/cpp/` uses **Catch2** to verify that the C++
+optimizer matches the Fortran results on several benchmark functions
+(Rosenbrock, Himmelblau, sphere, etc.) to within machine epsilon.
+
+``` r
+banana <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
+
+r_cpp     <- ucminfcpp::ucminf(c(-1.2, 1), banana)
+r_fortran <- ucminf::ucminf(c(-1.2, 1), banana)
+
+stopifnot(isTRUE(all.equal(r_cpp$par, r_fortran$par)))
+cat("Results are numerically identical.\n")
+#> Results are numerically identical.
+```

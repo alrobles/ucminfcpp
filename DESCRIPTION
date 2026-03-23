@@ -1,7 +1,7 @@
 Package: ucminfcpp
 Type: Package
 Title: C++ Reimplementation of the 'ucminf' Unconstrained Nonlinear Optimizer
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
     person("Angel Luis", "Robles Fernández", 
            role = c("aut", "cre"),

@@ -17,7 +17,8 @@ Authors@R: c(
            comment = "Contributor to original R package ucminf"))
 Description: 
     A modern C++17 reimplementation of the UCMINF algorithm for 
-    unconstrained nonlinear optimization (Nielsen 2000), offering full 
+    unconstrained nonlinear optimization (Nielsen and Mortensen, 2011,
+    <doi:10.32614/CRAN.package.ucminf>), offering full 
     API compatibility with the original 'ucminf' R package but developed 
     independently. The optimizer core has been rewritten in C with a 
     modern header-only C++17 interface, zero-allocation line search, and 

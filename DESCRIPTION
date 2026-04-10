@@ -11,8 +11,10 @@ Authors@R: c(
            comment = "Original UCMINF algorithm (Fortran)"),
     person("Rex", "Brown",
            role = "ctb",
-           comment = "Contributor to original R package ucminf")
-    )
+           comment = "Contributor to original R package ucminf"),
+    person("K Hervé", "Dakpo", email = "k-herve.dakpo@inrae.fr", 
+           role = c("ctb"),
+           comment = "Contributor to original R package ucminf"))
 Description: 
     A modern C++17 reimplementation of the UCMINF algorithm for 
     unconstrained nonlinear optimization (Nielsen 2000), offering full 

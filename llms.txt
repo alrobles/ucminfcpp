@@ -4,13 +4,14 @@ R package that provides unconstrained nonlinear optimization through a
 modern **C++17** reimplementation of the classic Fortran-based
 [ucminf](https://CRAN.R-project.org/package=ucminf) algorithm. It is a
 **drop-in replacement** for
-[`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html).
-
-The reimplementation of the C++ library offers multi-language support:
+[`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html). The
+reimplementation of the C++ library offers multi-language support for
 [**Python**](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
 and
 [**Julia**](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)
-bindings are available. \## Features
+.
+
+## Features
 
 - **Drop-in replacement** for the original
   [`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html)
@@ -117,16 +118,22 @@ Diethelm Wuertz. Dr. Wuertz passed away in 2016
 
 # Package index
 
-## All functions
+## Main function
 
-- [`print(`*`<ucminf>`*`)`](https://alrobles.github.io/ucminfcpp/reference/print.ucminf.md)
-  : Print method for ucminf objects
 - [`ucminf()`](https://alrobles.github.io/ucminfcpp/reference/ucminf.md)
   : General-Purpose Unconstrained Non-Linear Optimization (C/Rcpp)
+
+## Auxiliary utilities
+
 - [`ucminf_control()`](https://alrobles.github.io/ucminfcpp/reference/ucminf_control.md)
   : Build a validated control list for ucminf()
 - [`ucminf_xptr()`](https://alrobles.github.io/ucminfcpp/reference/ucminf_xptr.md)
   : Optimize using a compiled C++ objective (XPtr interface)
+
+## Print methods
+
+- [`print(`*`<ucminf>`*`)`](https://alrobles.github.io/ucminfcpp/reference/print.ucminf.md)
+  : Print method for ucminf objects
 
 # Articles
 

@@ -4,13 +4,14 @@ R package that provides unconstrained nonlinear optimization through a
 modern **C++17** reimplementation of the classic Fortran-based
 [ucminf](https://CRAN.R-project.org/package=ucminf) algorithm. It is a
 **drop-in replacement** for
-[`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html).
-
-The reimplementation of the C++ library offers multi-language support:
+[`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html). The
+reimplementation of the C++ library offers multi-language support for
 [**Python**](https://alrobles.github.io/ucminfcpp/articles/python_manual.html)
 and
 [**Julia**](https://alrobles.github.io/ucminfcpp/articles/julia_manual.html)
-bindings are available. \## Features
+.
+
+## Features
 
 - **Drop-in replacement** for the original
   [`ucminf::ucminf()`](https://rdrr.io/pkg/ucminf/man/ucminf.html)

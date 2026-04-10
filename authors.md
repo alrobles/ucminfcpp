@@ -10,6 +10,9 @@
 - **Rex Brown**. Contributor.  
   Contributor to original R package ucminf
 
+- **K Hervé Dakpo**. Contributor.  
+  Contributor to original R package ucminf
+
 ## Citation
 
 Source:

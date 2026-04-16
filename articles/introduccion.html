@@ -166,9 +166,9 @@ reduced C/Fortran call overhead in its C++ core.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">benchmark_results</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;       expr     min       lq      mean   median      uq     max neval</span></span>
-<span><span class="co">#&gt;  ucminfcpp  79.364  82.4075  86.84969  85.6975  87.782 155.664   100</span></span>
-<span><span class="co">#&gt;     ucminf 116.493 121.1650 127.52031 126.9490 131.293 189.184   100</span></span></code></pre></div>
+<span><span class="co">#&gt;       expr     min       lq      mean  median       uq     max neval</span></span>
+<span><span class="co">#&gt;  ucminfcpp  78.647  81.1305  85.25012  82.308  85.8425 160.328   100</span></span>
+<span><span class="co">#&gt;     ucminf 112.707 114.6605 118.90022 116.158 118.9720 197.013   100</span></span></code></pre></div>
 <p>The benchmark shows the median execution time for each implementation
 across 100 runs. <code>ucminfcpp</code> achieves comparable or better
 performance while maintaining full numerical equivalence.</p>

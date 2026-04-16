@@ -8,7 +8,7 @@ articles:
   portability_from_fortran: portability_from_fortran.html
   python_manual: python_manual.html
   ucminf_features: ucminf_features.html
-last_built: 2026-04-10T18:49Z
+last_built: 2026-04-16T14:42Z
 urls:
   reference: https://alrobles.github.io/ucminfcpp/reference
   article: https://alrobles.github.io/ucminfcpp/articles

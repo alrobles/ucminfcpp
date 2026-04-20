@@ -31,7 +31,7 @@ Depends: R (>= 3.5.0)
 Imports: 
     Rcpp
 LinkingTo: 
-    Rcpp
+    Rcpp (>= 1.1.0)
 Suggests:
     testthat (>= 3.0.0),
     ucminf,

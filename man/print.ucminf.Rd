@@ -13,6 +13,10 @@
 
 \item{...}{Unused.}
 }
+\value{
+The input object \code{x} is returned invisibly (called for side
+effects).
+}
 \description{
 Print method for ucminf objects
 }

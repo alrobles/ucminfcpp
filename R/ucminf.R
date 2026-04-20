@@ -297,6 +297,8 @@ ucminf <- function(par, fn = NULL, gr = NULL, ..., fdfun = NULL,
 #' @param x A \code{ucminf} object.
 #' @param digits Number of significant digits to print.
 #' @param ... Unused.
+#' @return The input object \code{x} is returned invisibly (called for side
+#' effects).
 #' @export
 print.ucminf <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
     cat("ucminf result\n")

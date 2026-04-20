@@ -100,9 +100,9 @@ benchmark_results <- microbenchmark(
 )
 print(benchmark_results)
 #> Unit: microseconds
-#>       expr    min     lq     mean  median      uq     max neval
-#>  ucminfcpp 62.804 63.810 66.57705 64.7965 66.2985 146.017   100
-#>     ucminf 90.224 91.677 94.85415 92.7330 95.3020 148.471   100
+#>       expr     min       lq      mean  median       uq     max neval
+#>  ucminfcpp  79.008  81.0605  85.89239  82.543  85.3870 163.173   100
+#>     ucminf 112.868 114.6855 118.70559 117.100 119.0075 183.914   100
 ```
 
 The benchmark shows the median execution time for each implementation

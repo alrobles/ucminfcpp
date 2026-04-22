@@ -11,6 +11,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^vignettes$
 ^CRAN-SUBMISSION$
 ^vignettes$
 ^cran-comments\.md$

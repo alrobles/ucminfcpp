@@ -16,25 +16,24 @@ Authors@R: c(
            role = c("ctb"),
            comment = "Contributor to original R package ucminf"))
 Description: 
-    A modern C++17 reimplementation of the UCMINF algorithm for 
-    unconstrained nonlinear optimization (Nielsen and Mortensen, 2011,
-    <doi:10.32614/CRAN.package.ucminf>), offering full 
-    API compatibility with the original 'ucminf' R package but developed 
-    independently. The optimizer core has been rewritten in C with a 
-    modern header-only C++17 interface, zero-allocation line search, and 
-    an Rcpp interface. The goal is numerical equivalence with improved 
-    performance, reproducibility, and extensibility. Includes extensive 
-    test coverage, performance regression tests, and compatibility checks 
-    against 'ucminf'. This package is not affiliated with the original 
-    maintainers but acknowledges their authorship of the algorithm and the 
-    original R interface.
+    A modern C++17 reimplementation of the UCMINF algorithm for unconstrained
+    nonlinear optimization (Nielsen and Mortensen, 2011,
+    <doi:10.32614/CRAN.package.ucminf>), offering full API compatibility with
+    the original 'ucminf' R package but developed independently. The optimizer
+    core has been rewritten in C with a modern header-only C++17 interface,
+    zero-allocation line search, and an Rcpp interface. The goal is numerical
+    equivalence with improved performance, reproducibility, and extensibility.
+    Includes extensive test coverage, performance regression tests, and
+    compatibility checks against 'ucminf'. This package is not affiliated with
+    the original maintainers but acknowledges their authorship of the algorithm
+    and the original R interface.
 License: GPL (>= 3)
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
 Imports: 
     Rcpp
 LinkingTo: 
-    Rcpp
+    Rcpp (>= 1.1.0)
 Suggests:
     testthat (>= 3.0.0),
     ucminf,

@@ -22,3 +22,7 @@ print(x, digits = max(3L, getOption("digits") - 3L), ...)
 - ...:
 
   Unused.
+
+## Value
+
+The input object `x` is returned invisibly (called for side effects).

@@ -308,7 +308,10 @@ print.ucminf <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
     print(x$par, digits = digits)
     if (!is.null(x$info)) {
         cat("  Evaluations:", x$info["neval"], "\n")
-        cat("  Max |gradient|:", format(x$info["maxgradient"], digits = digits), "\n")
+        cat("  Max |gradient|:",
+            format(x$info["maxgradient"],
+                   digits = digits),
+            "\n")
     }
     invisible(x)
 }

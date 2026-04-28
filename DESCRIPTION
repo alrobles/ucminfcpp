@@ -1,6 +1,6 @@
 Package: ucminfcpp
 Type: Package
-Title: C++ Reimplementation of the 'ucminf' Unconstrained Nonlinear Optimizer
+Title: 'C++' Reimplementation of the 'ucminf' Unconstrained Nonlinear Optimizer
 Version: 1.0.0
 Authors@R: c(
     person("Angel Luis", "Robles Fernández", 
@@ -8,18 +8,20 @@ Authors@R: c(
            email = "a.l.robles.fernandez@gmail.com"),
     person("Hans Bruun", "Nielsen",
            role = "cph",
-           comment = "Original UCMINF algorithm (Fortran)"),
+           comment = "Original 'UCMINF' algorithm ('Fortran')"),
     person("Rex", "Brown",
            role = "ctb",
-           comment = "Contributor to original R package ucminf")
-    )
+           comment = "Contributor to original R package 'ucminf'"),
+    person("K Hervé", "Dakpo", email = "k-herve.dakpo@inrae.fr", 
+           role = c("ctb"),
+           comment = "Contributor to original R package 'ucminf'"))
 Description: 
-    A modern C++17 reimplementation of the UCMINF algorithm for unconstrained
-    nonlinear optimization (Nielsen and Mortensen, 2011,
+    A modern 'C++17/ reimplementation of the 'UCMINF/ algorithm for
+    unconstrained nonlinear optimization (Nielsen and Mortensen, 2011,
     <doi:10.32614/CRAN.package.ucminf>), offering full API compatibility with
     the original 'ucminf' R package but developed independently. The optimizer
-    core has been rewritten in C with a modern header-only C++17 interface,
-    zero-allocation line search, and an Rcpp interface. The goal is numerical
+    core has been rewritten in 'C' with a modern header-only 'C++17' interface,
+    zero-allocation line search, and an 'Rcpp' interface. The goal is numerical
     equivalence with improved performance, reproducibility, and extensibility.
     Includes extensive test coverage, performance regression tests, and
     compatibility checks against 'ucminf'. This package is not affiliated with

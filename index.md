@@ -29,6 +29,7 @@ and
 Install the latest development version from GitHub:
 
 ``` r
+
 # Install directly from GitHub
 devtools::install_github("alrobles/ucminfcpp")
 ```
@@ -39,6 +40,7 @@ The example below optimises **Rosenbrock’s Banana Function** and
 confirms that `ucminfcpp` and `ucminf` produce identical results.
 
 ``` r
+
 # Rosenbrock's Banana Function
 banana <- function(x) {
   100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2

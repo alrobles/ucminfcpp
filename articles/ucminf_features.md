@@ -19,6 +19,7 @@ initial points illustrates how the optimizer converges to the nearest
 minimum.
 
 ``` r
+
 himmelblau <- function(x) {
   (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
 }
@@ -45,6 +46,7 @@ only requirement is that the function accepts a numeric vector of length
 ### Example — Sphere Function in 10 Dimensions
 
 ``` r
+
 sphere <- function(x) sum(x^2)
 
 x0  <- rep(2, 10)
@@ -61,6 +63,7 @@ The Rastrigin function is highly multimodal, but starting near the
 origin still converges to the global minimum.
 
 ``` r
+
 rastrigin <- function(x) {
   n <- length(x)
   10 * n + sum(x^2 - 10 * cos(2 * pi * x))
@@ -82,6 +85,7 @@ and improves accuracy, because finite-difference approximation is
 skipped.
 
 ``` r
+
 banana      <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
 banana_grad <- function(x) {
   c(-400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),
@@ -101,6 +105,7 @@ Starting exactly at the minimum should return immediately without
 degrading the result.
 
 ``` r
+
 quadratic <- function(x) (x[1] - 3)^2 + (x[2] + 5)^2
 res_min   <- ucminfcpp::ucminf(c(3, -5), quadratic)
 cat("f(3,-5) =", res_min$value, "\n")   # should be ~0
@@ -113,6 +118,7 @@ Functions with a broad, nearly flat minimum are handled gracefully; the
 optimizer stops when the gradient norm falls below the tolerance.
 
 ``` r
+
 flat_fn <- function(x) {
   exp(-0.01 * sum(x^2))   # very flat; minimum spread over a large area
 }
@@ -127,14 +133,15 @@ cat("convergence code:", res_flat$convergence, "\n")
 
 All tuning parameters of the original `ucminf` are supported:
 
-| Parameter         | Default                     | Description                            |
-|-------------------|-----------------------------|----------------------------------------|
-| `control$maxeval` | 500                         | Maximum number of function evaluations |
-| `control$trace`   | 0                           | Verbosity level (0 = silent)           |
-| `control$eps`     | `sqrt(.Machine$double.eps)` | Gradient convergence tolerance         |
-| `control$stepmax` | 1                           | Maximum step length                    |
+| Parameter | Default | Description |
+|----|----|----|
+| `control$maxeval` | 500 | Maximum number of function evaluations |
+| `control$trace` | 0 | Verbosity level (0 = silent) |
+| `control$eps` | `sqrt(.Machine$double.eps)` | Gradient convergence tolerance |
+| `control$stepmax` | 1 | Maximum step length |
 
 ``` r
+
 res_ctrl <- ucminfcpp::ucminf(
   c(-1.2, 1), banana,
   control = list(maxeval = 1000, trace = 0)

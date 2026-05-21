@@ -27,13 +27,13 @@ in the `ucminf` CRAN package, which calls the original Fortran code via
 The Fortran wrapper approach has several practical limitations that
 motivated the creation of `ucminfcpp`:
 
-| Concern          | Fortran + R                                 | C++17 (ucminfcpp)                                   |
-|------------------|---------------------------------------------|-----------------------------------------------------|
-| **Portability**  | Requires a Fortran compiler at install time | Header-only C++17, any modern compiler              |
-| **Embedding**    | Not straightforward without R               | `#include "ucminf_core.hpp"` in any C++ project     |
-| **Python/Julia** | Not directly usable                         | `pybind11` and `CxxWrap` bindings included          |
-| **Maintenance**  | Fixed-form Fortran 77                       | Readable, idiomatic modern C++                      |
-| **Performance**  | R ↔︎ Fortran call overhead                   | Inlinable template API; zero-allocation line search |
+| Concern | Fortran + R | C++17 (ucminfcpp) |
+|----|----|----|
+| **Portability** | Requires a Fortran compiler at install time | Header-only C++17, any modern compiler |
+| **Embedding** | Not straightforward without R | `#include "ucminf_core.hpp"` in any C++ project |
+| **Python/Julia** | Not directly usable | `pybind11` and `CxxWrap` bindings included |
+| **Maintenance** | Fixed-form Fortran 77 | Readable, idiomatic modern C++ |
+| **Performance** | R ↔︎ Fortran call overhead | Inlinable template API; zero-allocation line search |
 
 ## The C++ Reimplementation
 
@@ -97,6 +97,7 @@ optimizer matches the Fortran results on several benchmark functions
 (Rosenbrock, Himmelblau, sphere, etc.) to within machine epsilon.
 
 ``` r
+
 banana <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
 
 r_cpp     <- ucminfcpp::ucminf(c(-1.2, 1), banana)

@@ -22,6 +22,7 @@ The Banana Function is a classic benchmark for optimization algorithms.
 Its global minimum is at `(1, 1)`.
 
 ``` r
+
 banana <- function(x) {
   100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
 }
@@ -36,6 +37,7 @@ print(result$par)   # should be c(1, 1)
 A simple quadratic with a known minimum at `(3, -5)`.
 
 ``` r
+
 quadratic <- function(x) {
   (x[1] - 3)^2 + (x[2] + 5)^2
 }
@@ -51,6 +53,7 @@ Any smooth, differentiable objective can be passed to
 [`ucminfcpp::ucminf()`](https://alrobles.github.io/ucminfcpp/reference/ucminf.md).
 
 ``` r
+
 custom_fn <- function(x) {
   sum(x^2 - log(1 + x^2))
 }
@@ -66,6 +69,7 @@ print(result_c$par)   # should be close to c(0, 0, 0)
 following code confirms the roots match for the Banana Function.
 
 ``` r
+
 starting_point <- c(-1.2, 1)
 
 result_cpp     <- ucminfcpp::ucminf(starting_point, banana)
@@ -91,6 +95,7 @@ outperforms the Fortran-based `ucminf` due to reduced C/Fortran call
 overhead in its C++ core.
 
 ``` r
+
 library(microbenchmark)
 
 benchmark_results <- microbenchmark(
@@ -100,9 +105,9 @@ benchmark_results <- microbenchmark(
 )
 print(benchmark_results)
 #> Unit: microseconds
-#>       expr     min      lq      mean   median       uq     max neval
-#>  ucminfcpp  91.200  92.623  97.84334  94.8470  98.0485 166.992   100
-#>     ucminf 121.808 124.628 131.08919 127.0825 131.0350 173.795   100
+#>       expr     min       lq      mean  median       uq     max neval
+#>  ucminfcpp  89.938  92.3675  98.15843  94.642  98.2185 188.371   100
+#>     ucminf 121.767 125.2935 130.61287 127.913 130.7590 196.065   100
 ```
 
 The benchmark shows the median execution time for each implementation
